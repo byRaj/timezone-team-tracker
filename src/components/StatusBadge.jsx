@@ -1,12 +1,7 @@
 
-import { Status } from '../data/mockData';
 import { Circle, Phone, Users, Power } from 'lucide-react';
 
-interface StatusBadgeProps {
-  status: Status;
-}
-
-export const StatusBadge = ({ status }: StatusBadgeProps) => {
+export const StatusBadge = ({ status }) => {
   const statusConfig = {
     available: {
       label: 'Available',

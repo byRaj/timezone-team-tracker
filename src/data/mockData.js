@@ -1,24 +1,5 @@
 
-export type Status = 'available' | 'busy' | 'in-meeting' | 'offline';
-
-export interface WorkingHours {
-  start: number; // 24-hour format (e.g., 9 for 9 AM)
-  end: number;   // 24-hour format (e.g., 17 for 5 PM)
-}
-
-export interface TeamMember {
-  id: string;
-  name: string;
-  role: string;
-  avatar: string;
-  status: Status;
-  timezone: string;
-  location: string;
-  workingHours: WorkingHours;
-  lastUpdated?: Date;
-}
-
-export const mockTeamMembers: TeamMember[] = [
+export const mockTeamMembers = [
   {
     id: '1',
     name: 'You',

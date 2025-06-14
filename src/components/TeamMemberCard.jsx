@@ -1,15 +1,9 @@
 
 import { Clock, MapPin } from 'lucide-react';
-import { TeamMember } from '../data/mockData';
 import { StatusBadge } from './StatusBadge';
 import { isWithinWorkingHours, formatLocalTime } from '../utils/timeUtils';
 
-interface TeamMemberCardProps {
-  member: TeamMember;
-  isCurrentUser?: boolean;
-}
-
-export const TeamMemberCard = ({ member, isCurrentUser = false }: TeamMemberCardProps) => {
+export const TeamMemberCard = ({ member, isCurrentUser = false }) => {
   const localTime = formatLocalTime(member.timezone);
   const withinWorkingHours = isWithinWorkingHours(member.timezone, member.workingHours);
   

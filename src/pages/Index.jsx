@@ -3,12 +3,12 @@ import { useState, useEffect } from 'react';
 import { TeamMemberCard } from '../components/TeamMemberCard';
 import { StatusSelector } from '../components/StatusSelector';
 import { Header } from '../components/Header';
-import { mockTeamMembers, TeamMember, Status } from '../data/mockData';
+import { mockTeamMembers } from '../data/mockData';
 import { toast } from 'sonner';
 
 const Index = () => {
-  const [teamMembers, setTeamMembers] = useState<TeamMember[]>(mockTeamMembers);
-  const [currentUser, setCurrentUser] = useState<TeamMember>(mockTeamMembers[0]);
+  const [teamMembers, setTeamMembers] = useState(mockTeamMembers);
+  const [currentUser, setCurrentUser] = useState(mockTeamMembers[0]);
 
   // Simulate real-time updates
   useEffect(() => {
@@ -17,7 +17,7 @@ const Index = () => {
       const otherMembers = teamMembers.filter(member => member.id !== currentUser.id);
       if (otherMembers.length > 0) {
         const randomMember = otherMembers[Math.floor(Math.random() * otherMembers.length)];
-        const statuses: Status[] = ['available', 'busy', 'in-meeting', 'offline'];
+        const statuses = ['available', 'busy', 'in-meeting', 'offline'];
         const randomStatus = statuses[Math.floor(Math.random() * statuses.length)];
         
         if (randomMember.status !== randomStatus) {
@@ -35,7 +35,7 @@ const Index = () => {
     return () => clearInterval(interval);
   }, [teamMembers, currentUser.id]);
 
-  const handleStatusChange = (newStatus: Status) => {
+  const handleStatusChange = (newStatus) => {
     const updatedUser = { ...currentUser, status: newStatus, lastUpdated: new Date() };
     setCurrentUser(updatedUser);
     
@@ -85,7 +85,7 @@ const Index = () => {
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-100 dark:border-gray-700">
           <h3 className="text-xl font-bold text-gray-800 dark:text-white mb-4">Team Overview</h3>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            {(['available', 'busy', 'in-meeting', 'offline'] as Status[]).map(status => {
+            {(['available', 'busy', 'in-meeting', 'offline']).map(status => {
               const count = teamMembers.filter(member => member.status === status).length;
               const statusColors = {
                 available: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',

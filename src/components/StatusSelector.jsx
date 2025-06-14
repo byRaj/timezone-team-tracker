@@ -1,14 +1,8 @@
 
-import { Status } from '../data/mockData';
 import { StatusBadge } from './StatusBadge';
 
-interface StatusSelectorProps {
-  currentStatus: Status;
-  onStatusChange: (status: Status) => void;
-}
-
-export const StatusSelector = ({ currentStatus, onStatusChange }: StatusSelectorProps) => {
-  const statuses: Status[] = ['available', 'busy', 'in-meeting', 'offline'];
+export const StatusSelector = ({ currentStatus, onStatusChange }) => {
+  const statuses = ['available', 'busy', 'in-meeting', 'offline'];
 
   return (
     <div className="space-y-3">

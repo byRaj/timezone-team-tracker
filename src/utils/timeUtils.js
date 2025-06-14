@@ -1,7 +1,5 @@
 
-import { WorkingHours } from '../data/mockData';
-
-export const formatLocalTime = (timezone: string): string => {
+export const formatLocalTime = (timezone) => {
   try {
     const now = new Date();
     return now.toLocaleString('en-US', {
@@ -17,7 +15,7 @@ export const formatLocalTime = (timezone: string): string => {
   }
 };
 
-export const isWithinWorkingHours = (timezone: string, workingHours: WorkingHours): boolean => {
+export const isWithinWorkingHours = (timezone, workingHours) => {
   try {
     const now = new Date();
     const timeInTimezone = new Date(now.toLocaleString('en-US', { timeZone: timezone }));
@@ -30,7 +28,7 @@ export const isWithinWorkingHours = (timezone: string, workingHours: WorkingHour
   }
 };
 
-export const getTimezoneOffset = (timezone: string): string => {
+export const getTimezoneOffset = (timezone) => {
   try {
     const now = new Date();
     const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
@@ -47,7 +45,7 @@ export const getTimezoneOffset = (timezone: string): string => {
   }
 };
 
-const getTimezoneOffsetInMs = (timezone: string): number => {
+const getTimezoneOffsetInMs = (timezone) => {
   const now = new Date();
   const localTime = now.getTime();
   const localOffset = now.getTimezoneOffset() * 60000;
