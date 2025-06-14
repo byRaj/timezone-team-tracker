@@ -1,8 +1,8 @@
-
 // MongoDB API integration utilities
 // This file provides functions to interact with your MongoDB backend
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+const MONGODB_URI = 'mongodb://localhost:27017/team-tracker';
 
 // Generic API request function
 const apiRequest = async (endpoint, options = {}) => {
@@ -10,6 +10,7 @@ const apiRequest = async (endpoint, options = {}) => {
   const config = {
     headers: {
       'Content-Type': 'application/json',
+      'MongoDB-URI': MONGODB_URI,
       ...options.headers,
     },
     ...options,
@@ -64,6 +65,9 @@ export const userApi = {
       method: 'PUT',
       body: JSON.stringify({ timezone }),
     }),
+
+  // Test MongoDB connection
+  testConnection: () => apiRequest('/test-connection'),
 };
 
 // WebSocket connection for real-time updates
@@ -212,4 +216,33 @@ export const useTeamData = () => {
     setTeamMembers,
     setCurrentUser,
   };
+};
+
+// MongoDB connection test hook
+export const useMongoConnection = () => {
+  const [isConnected, setIsConnected] = useState(false);
+  const [connectionError, setConnectionError] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const testConnection = async () => {
+      try {
+        setIsLoading(true);
+        await userApi.testConnection();
+        setIsConnected(true);
+        setConnectionError(null);
+        console.log('MongoDB connection successful:', MONGODB_URI);
+      } catch (error) {
+        setIsConnected(false);
+        setConnectionError(error.message);
+        console.error('MongoDB connection failed:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    testConnection();
+  }, []);
+
+  return { isConnected, connectionError, isLoading, mongoUri: MONGODB_URI };
 };
