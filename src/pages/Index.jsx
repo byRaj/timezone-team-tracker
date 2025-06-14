@@ -11,12 +11,7 @@ const Index = () => {
   const { teamMembers, updateTeamMember, isAuthenticated, currentUser } = useAdmin();
   const [currentTeamMember, setCurrentTeamMember] = useState(null);
 
-  // If not authenticated, show login page
-  if (!isAuthenticated) {
-    return <Login />;
-  }
-
-  // Find current user's team member data
+  // Move all hooks to the top before any conditional returns
   useEffect(() => {
     if (currentUser && teamMembers.length > 0) {
       const memberData = teamMembers.find(member => member.name === currentUser.name) || teamMembers[0];
@@ -24,10 +19,10 @@ const Index = () => {
     }
   }, [currentUser, teamMembers]);
 
-  // Simulate real-time updates
   useEffect(() => {
+    if (!isAuthenticated || !currentTeamMember) return;
+    
     const interval = setInterval(() => {
-      // Randomly update a team member's status (excluding current user)
       const otherMembers = teamMembers.filter(member => member.id !== currentTeamMember?.id);
       if (otherMembers.length > 0) {
         const randomMember = otherMembers[Math.floor(Math.random() * otherMembers.length)];
@@ -38,10 +33,15 @@ const Index = () => {
           updateTeamMember(randomMember.id, { status: randomStatus });
         }
       }
-    }, 10000); // Update every 10 seconds
+    }, 10000);
 
     return () => clearInterval(interval);
-  }, [teamMembers, currentTeamMember?.id, updateTeamMember]);
+  }, [teamMembers, currentTeamMember?.id, updateTeamMember, isAuthenticated]);
+
+  // If not authenticated, show login page
+  if (!isAuthenticated) {
+    return <Login />;
+  }
 
   const handleStatusChange = (newStatus) => {
     if (!currentTeamMember) return;
