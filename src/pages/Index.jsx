@@ -5,10 +5,12 @@ import { StatusSelector } from '../components/StatusSelector';
 import { Header } from '../components/Header';
 import { Login } from '../components/Login';
 import { useAdmin } from '../contexts/AdminContext';
+import { useTheme } from '../contexts/ThemeContext';
 import { toast } from 'sonner';
 
 const Index = () => {
   const { teamMembers, updateTeamMember, isAuthenticated, currentUser } = useAdmin();
+  const { theme } = useTheme();
   const [currentTeamMember, setCurrentTeamMember] = useState(null);
 
   // Move all hooks to the top before any conditional returns
@@ -55,7 +57,7 @@ const Index = () => {
 
   const pageStyle = {
     minHeight: '100vh',
-    backgroundColor: '#0f172a'
+    backgroundColor: theme === 'dark' ? '#0f172a' : '#f8fafc'
   };
 
   const containerStyle = {
@@ -66,21 +68,21 @@ const Index = () => {
 
   const noMembersStyle = {
     textAlign: 'center',
-    backgroundColor: '#1e293b',
+    backgroundColor: theme === 'dark' ? '#1e293b' : '#ffffff',
     borderRadius: '12px',
     padding: '32px',
-    border: '1px solid #374151'
+    border: theme === 'dark' ? '1px solid #374151' : '1px solid #e2e8f0'
   };
 
   const noMembersTitleStyle = {
     fontSize: '24px',
     fontWeight: 'bold',
-    color: '#ffffff',
+    color: theme === 'dark' ? '#ffffff' : '#1e293b',
     marginBottom: '16px'
   };
 
   const noMembersTextStyle = {
-    color: '#94a3b8'
+    color: theme === 'dark' ? '#94a3b8' : '#64748b'
   };
 
   const sectionStyle = {
@@ -88,17 +90,17 @@ const Index = () => {
   };
 
   const currentUserSectionStyle = {
-    backgroundColor: '#1e293b',
+    backgroundColor: theme === 'dark' ? '#1e293b' : '#ffffff',
     borderRadius: '12px',
     boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
     padding: '24px',
-    border: '1px solid #374151'
+    border: theme === 'dark' ? '1px solid #374151' : '1px solid #e2e8f0'
   };
 
   const sectionTitleStyle = {
     fontSize: '24px',
     fontWeight: 'bold',
-    color: '#ffffff',
+    color: theme === 'dark' ? '#ffffff' : '#1e293b',
     marginBottom: '24px'
   };
 
@@ -127,11 +129,11 @@ const Index = () => {
   };
 
   const statsStyle = {
-    backgroundColor: '#1e293b',
+    backgroundColor: theme === 'dark' ? '#1e293b' : '#ffffff',
     borderRadius: '12px',
     boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
     padding: '24px',
-    border: '1px solid #374151'
+    border: theme === 'dark' ? '1px solid #374151' : '1px solid #e2e8f0'
   };
 
   const statsGridStyle = {

@@ -4,11 +4,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAdmin } from '../contexts/AdminContext';
+import { useTheme } from '../contexts/ThemeContext';
 import { LogIn, Shield } from 'lucide-react';
 
 export const Login = () => {
   const [credentials, setCredentials] = useState({ id: '', password: '' });
   const { login } = useAdmin();
+  const { theme } = useTheme();
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -20,7 +22,7 @@ export const Login = () => {
 
   const containerStyle = {
     minHeight: '100vh',
-    backgroundColor: '#0f172a',
+    backgroundColor: theme === 'dark' ? '#0f172a' : '#f8fafc',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -30,8 +32,8 @@ export const Login = () => {
   const cardStyle = {
     width: '100%',
     maxWidth: '400px',
-    backgroundColor: '#1e293b',
-    border: '1px solid #334155',
+    backgroundColor: theme === 'dark' ? '#1e293b' : '#ffffff',
+    border: theme === 'dark' ? '1px solid #334155' : '1px solid #e2e8f0',
     borderRadius: '12px',
     boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
   };
@@ -55,18 +57,18 @@ export const Login = () => {
   const titleStyle = {
     fontSize: '32px',
     fontWeight: 'bold',
-    color: '#ffffff',
+    color: theme === 'dark' ? '#ffffff' : '#1e293b',
     marginBottom: '8px'
   };
 
   const subtitleStyle = {
-    color: '#94a3b8'
+    color: theme === 'dark' ? '#94a3b8' : '#64748b'
   };
 
   const inputStyle = {
-    backgroundColor: '#374151',
-    border: '1px solid #4b5563',
-    color: '#ffffff',
+    backgroundColor: theme === 'dark' ? '#374151' : '#f8fafc',
+    border: theme === 'dark' ? '1px solid #4b5563' : '1px solid #d1d5db',
+    color: theme === 'dark' ? '#ffffff' : '#1e293b',
     padding: '12px',
     borderRadius: '8px',
     width: '100%',
@@ -102,13 +104,13 @@ export const Login = () => {
 
         <div style={cardStyle}>
           <div style={{ padding: '24px' }}>
-            <h2 style={{ fontSize: '20px', color: '#ffffff', textAlign: 'center', marginBottom: '24px' }}>
+            <h2 style={{ fontSize: '20px', color: theme === 'dark' ? '#ffffff' : '#1e293b', textAlign: 'center', marginBottom: '24px' }}>
               Sign in to continue
             </h2>
             
             <form onSubmit={handleSubmit}>
               <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', color: '#d1d5db', marginBottom: '8px', fontSize: '14px' }}>
+                <label style={{ display: 'block', color: theme === 'dark' ? '#d1d5db' : '#374151', marginBottom: '8px', fontSize: '14px' }}>
                   User ID
                 </label>
                 <input
@@ -122,7 +124,7 @@ export const Login = () => {
               </div>
               
               <div style={{ marginBottom: '24px' }}>
-                <label style={{ display: 'block', color: '#d1d5db', marginBottom: '8px', fontSize: '14px' }}>
+                <label style={{ display: 'block', color: theme === 'dark' ? '#d1d5db' : '#374151', marginBottom: '8px', fontSize: '14px' }}>
                   Password
                 </label>
                 <input
