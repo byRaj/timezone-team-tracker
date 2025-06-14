@@ -1,7 +1,7 @@
 
 # Team Availability Tracker
 
-A real-time team availability tracking application built with React, TypeScript, and Tailwind CSS. Keep track of your team members' status, timezone, and working hours in a beautiful, responsive interface.
+A real-time team availability tracking application built with React, JavaScript, and Tailwind CSS. Keep track of your team members' status, timezone, and working hours in a beautiful, responsive interface.
 
 ## Features
 
@@ -55,7 +55,7 @@ npm run dev
 
 ## Technologies Used
 
-- **Frontend**: React 18, TypeScript, Tailwind CSS
+- **Frontend**: React 18, JavaScript, Tailwind CSS
 - **Icons**: Lucide React
 - **Build Tool**: Vite
 - **Notifications**: Sonner (toast notifications)
@@ -65,25 +65,25 @@ npm run dev
 ```
 src/
 ├── components/          # Reusable components
-│   ├── Header.tsx       # App header with title and current time
-│   ├── TeamMemberCard.tsx # Individual team member display
-│   ├── StatusBadge.tsx  # Status indicator component
-│   └── StatusSelector.tsx # Status selection interface
+│   ├── Header.jsx       # App header with title and current time
+│   ├── TeamMemberCard.jsx # Individual team member display
+│   ├── StatusBadge.jsx  # Status indicator component
+│   └── StatusSelector.jsx # Status selection interface
 ├── data/
-│   └── mockData.ts      # Mock team member data
+│   └── mockData.js      # Mock team member data
 ├── utils/
-│   └── timeUtils.ts     # Timezone and time utilities
+│   └── timeUtils.js     # Timezone and time utilities
 └── pages/
-    └── Index.tsx        # Main application page
+    └── Index.jsx        # Main application page
 ```
 
 ## Customization
 
 ### Adding Team Members
 
-Edit `src/data/mockData.ts` to add or modify team members:
+Edit `src/data/mockData.js` to add or modify team members:
 
-```typescript
+```javascript
 {
   id: 'unique-id',
   name: 'Team Member Name',
@@ -104,7 +104,7 @@ Working hours are defined in 24-hour format:
 
 ### Customizing Status Types
 
-Status types are defined in `src/data/mockData.ts`. You can modify the `Status` type and update the related components.
+Status types are defined in `src/data/mockData.js`. You can modify the status types and update the related components.
 
 ## Contributing
 
