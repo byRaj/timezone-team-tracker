@@ -46,6 +46,34 @@ export const AdminProvider = ({ children }) => {
     toast.success('Logged out successfully');
   };
 
+  const addPerson = (personData) => {
+    // Add to user credentials
+    const newCredential = {
+      id: personData.id,
+      password: personData.password,
+      name: personData.name,
+      role: personData.role || 'member'
+    };
+    
+    setUserCredentials(prev => [...prev, newCredential]);
+
+    // Add to team members
+    const newMember = {
+      id: personData.id,
+      name: personData.name,
+      role: personData.role || 'member',
+      avatar: personData.avatar || '',
+      status: personData.status || 'available',
+      timezone: personData.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone,
+      location: personData.location || '',
+      workingHours: personData.workingHours || { start: 9, end: 17 },
+      lastUpdated: new Date(),
+    };
+    
+    setTeamMembers(prev => [...prev, newMember]);
+    toast.success(`${personData.name} has been added as a ${personData.role}`);
+  };
+
   const addUserCredential = (credentialData) => {
     const newCredential = {
       ...credentialData,
@@ -59,6 +87,10 @@ export const AdminProvider = ({ children }) => {
   const removeUserCredential = (userId) => {
     const user = userCredentials.find(cred => cred.id === userId);
     setUserCredentials(prev => prev.filter(cred => cred.id !== userId));
+    
+    // Also remove from team members if exists
+    setTeamMembers(prev => prev.filter(member => member.id !== userId));
+    
     toast.success(`User credentials removed for ${user?.name}`);
   };
 
@@ -110,6 +142,7 @@ export const AdminProvider = ({ children }) => {
       userCredentials,
       addUserCredential,
       removeUserCredential,
+      addPerson,
       currentUser,
       isAuthenticated,
       login,
