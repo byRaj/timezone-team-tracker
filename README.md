@@ -1,73 +1,130 @@
-# Welcome to your Lovable project
 
-## Project info
+# Team Availability Tracker
 
-**URL**: https://lovable.dev/projects/338f4a20-394f-40e6-914b-c3ef2f5b9c8b
+A real-time team availability tracking application built with React, TypeScript, and Tailwind CSS. Keep track of your team members' status, timezone, and working hours in a beautiful, responsive interface.
 
-## How can I edit this code?
+## Features
 
-There are several ways of editing your application.
+- 🟢 **Real-time Status Updates**: Live status tracking with WebSocket simulation
+- 🌍 **Timezone Awareness**: Automatic timezone detection and local time display
+- ⏰ **Working Hours**: Configurable working hours per team member
+- 🎨 **Beautiful UI**: Modern, responsive design with Tailwind CSS
+- 📱 **Mobile Friendly**: Fully responsive across all devices
+- 📊 **Team Overview**: Dashboard showing team status distribution
 
-**Use Lovable**
+## Status Types
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/338f4a20-394f-40e6-914b-c3ef2f5b9c8b) and start prompting.
+- **Available**: Ready for collaboration
+- **Do Not Disturb**: Focused work, minimal interruptions
+- **In a Meeting**: Currently in a meeting or call
+- **Offline**: Not currently working
 
-Changes made via Lovable will be committed automatically to this repo.
+## Getting Started
 
-**Use your preferred IDE**
+### Prerequisites
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+- Node.js (v16 or higher)
+- npm or yarn
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### Installation
 
-Follow these steps:
+1. Clone the repository:
+```bash
+git clone <repository-url>
+cd team-availability-tracker
+```
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+2. Install dependencies:
+```bash
+npm install
+```
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+3. Start the development server:
+```bash
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+4. Open your browser and navigate to `http://localhost:8080`
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## Usage
 
-**Use GitHub Codespaces**
+1. **Set Your Status**: Use the status selector to update your current availability
+2. **View Team Members**: See all team members with their current status, local time, and working hours
+3. **Real-time Updates**: Watch as team members' statuses update automatically
+4. **Timezone Support**: See each member's local time and whether they're within working hours
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## Technologies Used
 
-## What technologies are used for this project?
+- **Frontend**: React 18, TypeScript, Tailwind CSS
+- **Icons**: Lucide React
+- **Build Tool**: Vite
+- **Notifications**: Sonner (toast notifications)
 
-This project is built with:
+## Project Structure
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+```
+src/
+├── components/          # Reusable components
+│   ├── Header.tsx       # App header with title and current time
+│   ├── TeamMemberCard.tsx # Individual team member display
+│   ├── StatusBadge.tsx  # Status indicator component
+│   └── StatusSelector.tsx # Status selection interface
+├── data/
+│   └── mockData.ts      # Mock team member data
+├── utils/
+│   └── timeUtils.ts     # Timezone and time utilities
+└── pages/
+    └── Index.tsx        # Main application page
+```
 
-## How can I deploy this project?
+## Customization
 
-Simply open [Lovable](https://lovable.dev/projects/338f4a20-394f-40e6-914b-c3ef2f5b9c8b) and click on Share -> Publish.
+### Adding Team Members
 
-## Can I connect a custom domain to my Lovable project?
+Edit `src/data/mockData.ts` to add or modify team members:
 
-Yes, you can!
+```typescript
+{
+  id: 'unique-id',
+  name: 'Team Member Name',
+  role: 'Job Title',
+  avatar: 'https://avatar-url.com/image.jpg',
+  status: 'available',
+  timezone: 'America/New_York',
+  location: 'City, Country',
+  workingHours: { start: 9, end: 17 }
+}
+```
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+### Modifying Working Hours
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+Working hours are defined in 24-hour format:
+- `start: 9` = 9:00 AM
+- `end: 17` = 5:00 PM
+
+### Customizing Status Types
+
+Status types are defined in `src/data/mockData.ts`. You can modify the `Status` type and update the related components.
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature-name`
+3. Commit your changes: `git commit -am 'Add some feature'`
+4. Push to the branch: `git push origin feature-name`
+5. Submit a pull request
+
+## Future Enhancements
+
+- 🔐 JWT Authentication
+- 🗄️ MongoDB Integration
+- 🔌 Real WebSocket Implementation (Socket.IO)
+- 📧 Email Notifications
+- 📈 Usage Analytics
+- 👥 Team Management
+- 🎯 Custom Status Messages
+- 📅 Calendar Integration
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
