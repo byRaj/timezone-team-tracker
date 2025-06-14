@@ -20,41 +20,51 @@ export const Login = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <div className="flex justify-center mb-4">
+      <Card className="w-full max-w-md shadow-lg">
+        <CardHeader className="text-center space-y-4">
+          <div className="flex justify-center">
             <div className="bg-blue-100 dark:bg-blue-900 p-3 rounded-full">
               <Users className="w-8 h-8 text-blue-600 dark:text-blue-400" />
             </div>
           </div>
-          <CardTitle className="text-2xl font-bold">Team Availability Tracker</CardTitle>
-          <p className="text-gray-600 dark:text-gray-400">Sign in to access your team dashboard</p>
+          <CardTitle className="text-2xl font-bold text-gray-900 dark:text-white">
+            Team Availability Tracker
+          </CardTitle>
+          <p className="text-gray-600 dark:text-gray-400">
+            Sign in to access your team dashboard
+          </p>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">User ID</label>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                User ID
+              </label>
               <Input
                 type="text"
                 value={credentials.id}
                 onChange={(e) => setCredentials(prev => ({ ...prev, id: e.target.value }))}
                 placeholder="Enter your user ID"
                 required
+                className="w-full"
               />
             </div>
             
-            <div>
-              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Password</label>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                Password
+              </label>
               <Input
                 type="password"
                 value={credentials.password}
                 onChange={(e) => setCredentials(prev => ({ ...prev, password: e.target.value }))}
                 placeholder="Enter your password"
                 required
+                className="w-full"
               />
             </div>
             
-            <Button type="submit" className="w-full">
+            <Button type="submit" className="w-full mt-6">
               <LogIn className="w-4 h-4 mr-2" />
               Sign In
             </Button>
