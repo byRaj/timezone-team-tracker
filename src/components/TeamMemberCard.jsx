@@ -7,53 +7,139 @@ export const TeamMemberCard = ({ member, isCurrentUser = false }) => {
   const localTime = formatLocalTime(member.timezone);
   const withinWorkingHours = isWithinWorkingHours(member.timezone, member.workingHours);
   
+  const cardStyle = {
+    backgroundColor: '#1e293b',
+    borderRadius: '12px',
+    boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
+    padding: '24px',
+    border: isCurrentUser ? '2px solid #3b82f6' : '1px solid #374151',
+    transition: 'all 0.3s ease',
+    ':hover': {
+      boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)'
+    }
+  };
+
+  const headerStyle = {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '16px',
+    marginBottom: '16px'
+  };
+
+  const avatarContainerStyle = {
+    position: 'relative'
+  };
+
+  const avatarStyle = {
+    width: '64px',
+    height: '64px',
+    borderRadius: '50%',
+    objectFit: 'cover',
+    border: '2px solid #374151'
+  };
+
+  const statusDotStyle = {
+    position: 'absolute',
+    bottom: '-4px',
+    right: '-4px',
+    width: '20px',
+    height: '20px',
+    borderRadius: '50%',
+    border: '2px solid #1e293b',
+    backgroundColor: 
+      member.status === 'available' ? '#10b981' :
+      member.status === 'busy' ? '#ef4444' :
+      member.status === 'in-meeting' ? '#f59e0b' : '#6b7280'
+  };
+
+  const userInfoStyle = {
+    flex: 1,
+    minWidth: 0
+  };
+
+  const nameStyle = {
+    fontSize: '18px',
+    fontWeight: '600',
+    color: '#ffffff',
+    marginBottom: '4px',
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis'
+  };
+
+  const roleStyle = {
+    fontSize: '14px',
+    color: '#94a3b8',
+    whiteSpace: 'nowrap',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis'
+  };
+
+  const contentStyle = {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '12px'
+  };
+
+  const infoRowStyle = {
+    display: 'flex',
+    alignItems: 'center',
+    fontSize: '14px',
+    color: '#94a3b8',
+    gap: '8px'
+  };
+
+  const workingHoursStyle = {
+    fontSize: '12px',
+    padding: '4px 8px',
+    borderRadius: '20px',
+    textAlign: 'center',
+    backgroundColor: withinWorkingHours ? '#065f46' : '#374151',
+    color: withinWorkingHours ? '#a7f3d0' : '#9ca3af'
+  };
+
+  const lastUpdatedStyle = {
+    fontSize: '12px',
+    color: '#6b7280'
+  };
+
   return (
-    <div className={`bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 p-6 border ${
-      isCurrentUser ? 'border-blue-300 ring-2 ring-blue-100 dark:border-blue-600 dark:ring-blue-800' : 'border-gray-200 dark:border-gray-700'
-    }`}>
-      <div className="flex items-center space-x-4 mb-4">
-        <div className="relative">
+    <div style={cardStyle}>
+      <div style={headerStyle}>
+        <div style={avatarContainerStyle}>
           <img
             src={member.avatar}
             alt={member.name}
-            className="w-16 h-16 rounded-full object-cover ring-2 ring-gray-100 dark:ring-gray-600"
+            style={avatarStyle}
           />
-          <div className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full border-2 border-white dark:border-gray-800 ${
-            member.status === 'available' ? 'bg-green-500' :
-            member.status === 'busy' ? 'bg-red-500' :
-            member.status === 'in-meeting' ? 'bg-yellow-500' : 'bg-gray-400'
-          }`} />
+          <div style={statusDotStyle} />
         </div>
         
-        <div className="flex-1 min-w-0">
-          <h3 className="font-semibold text-gray-900 dark:text-white truncate">{member.name}</h3>
-          <p className="text-sm text-gray-600 dark:text-gray-300 truncate">{member.role}</p>
+        <div style={userInfoStyle}>
+          <h3 style={nameStyle}>{member.name}</h3>
+          <p style={roleStyle}>{member.role}</p>
         </div>
       </div>
       
-      <div className="space-y-3">
+      <div style={contentStyle}>
         <StatusBadge status={member.status} />
         
-        <div className="flex items-center text-sm text-gray-600 dark:text-gray-300">
-          <Clock className="w-4 h-4 mr-2" />
+        <div style={infoRowStyle}>
+          <Clock size={16} />
           <span>{localTime}</span>
         </div>
         
-        <div className="flex items-center text-sm text-gray-600 dark:text-gray-300">
-          <MapPin className="w-4 h-4 mr-2" />
+        <div style={infoRowStyle}>
+          <MapPin size={16} />
           <span>{member.location}</span>
         </div>
         
-        <div className={`text-xs px-2 py-1 rounded-full text-center ${
-          withinWorkingHours 
-            ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' 
-            : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300'
-        }`}>
+        <div style={workingHoursStyle}>
           {withinWorkingHours ? 'Within working hours' : 'Outside working hours'}
         </div>
         
         {member.lastUpdated && (
-          <p className="text-xs text-gray-500 dark:text-gray-400">
+          <p style={lastUpdatedStyle}>
             Last updated: {member.lastUpdated.toLocaleTimeString([], { 
               hour: '2-digit', 
               minute: '2-digit' 

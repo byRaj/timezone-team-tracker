@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { TeamMemberCard } from '../components/TeamMemberCard';
 import { StatusSelector } from '../components/StatusSelector';
@@ -52,14 +53,137 @@ const Index = () => {
     toast.success(`Status updated to ${newStatus.charAt(0).toUpperCase() + newStatus.slice(1).replace('-', ' ')}`);
   };
 
+  const pageStyle = {
+    minHeight: '100vh',
+    backgroundColor: '#0f172a'
+  };
+
+  const containerStyle = {
+    maxWidth: '1280px',
+    margin: '0 auto',
+    padding: '32px 16px'
+  };
+
+  const noMembersStyle = {
+    textAlign: 'center',
+    backgroundColor: '#1e293b',
+    borderRadius: '12px',
+    padding: '32px',
+    border: '1px solid #374151'
+  };
+
+  const noMembersTitleStyle = {
+    fontSize: '24px',
+    fontWeight: 'bold',
+    color: '#ffffff',
+    marginBottom: '16px'
+  };
+
+  const noMembersTextStyle = {
+    color: '#94a3b8'
+  };
+
+  const sectionStyle = {
+    marginBottom: '32px'
+  };
+
+  const currentUserSectionStyle = {
+    backgroundColor: '#1e293b',
+    borderRadius: '12px',
+    boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+    padding: '24px',
+    border: '1px solid #374151'
+  };
+
+  const sectionTitleStyle = {
+    fontSize: '24px',
+    fontWeight: 'bold',
+    color: '#ffffff',
+    marginBottom: '24px'
+  };
+
+  const currentUserContentStyle = {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '24px'
+  };
+
+  const currentUserContentLargeStyle = {
+    ...currentUserContentStyle,
+    '@media (min-width: 1024px)': {
+      flexDirection: 'row',
+      alignItems: 'flex-start'
+    }
+  };
+
+  const statusSelectorStyle = {
+    flex: 1
+  };
+
+  const gridStyle = {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+    gap: '24px'
+  };
+
+  const statsStyle = {
+    backgroundColor: '#1e293b',
+    borderRadius: '12px',
+    boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+    padding: '24px',
+    border: '1px solid #374151'
+  };
+
+  const statsGridStyle = {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(2, 1fr)',
+    gap: '16px'
+  };
+
+  const statsGridLargeStyle = {
+    ...statsGridStyle,
+    '@media (min-width: 640px)': {
+      gridTemplateColumns: 'repeat(4, 1fr)'
+    }
+  };
+
+  const getStatCardStyle = (status) => {
+    const colors = {
+      available: { bg: '#059669', text: '#ffffff' },
+      busy: { bg: '#dc2626', text: '#ffffff' },
+      'in-meeting': { bg: '#d97706', text: '#ffffff' },
+      offline: { bg: '#4b5563', text: '#e5e7eb' }
+    };
+    
+    return {
+      textAlign: 'center',
+      borderRadius: '8px',
+      padding: '16px',
+      backgroundColor: colors[status].bg,
+      color: colors[status].text,
+      boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)'
+    };
+  };
+
+  const statNumberStyle = {
+    fontSize: '24px',
+    fontWeight: 'bold'
+  };
+
+  const statLabelStyle = {
+    fontSize: '14px',
+    fontWeight: '500',
+    textTransform: 'capitalize'
+  };
+
   if (teamMembers.length === 0) {
     return (
-      <div className="min-h-screen bg-slate-900">
+      <div style={pageStyle}>
         <Header />
-        <main className="container mx-auto px-4 py-8">
-          <div className="text-center bg-slate-800 rounded-xl p-8 border border-slate-700">
-            <h2 className="text-2xl font-bold text-white mb-4">No Team Members</h2>
-            <p className="text-slate-400">Use the admin panel to add team members.</p>
+        <main style={containerStyle}>
+          <div style={noMembersStyle}>
+            <h2 style={noMembersTitleStyle}>No Team Members</h2>
+            <p style={noMembersTextStyle}>Use the admin panel to add team members.</p>
           </div>
         </main>
       </div>
@@ -67,18 +191,18 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen bg-slate-900">
+    <div style={pageStyle}>
       <Header />
       
-      <main className="container mx-auto px-4 py-8">
+      <main style={containerStyle}>
         {/* Current User Status Section */}
         {currentTeamMember && (
-          <div className="mb-8">
-            <div className="bg-slate-800 rounded-xl shadow-xl p-6 border border-slate-700">
-              <h2 className="text-2xl font-bold text-white mb-6">Your Status</h2>
-              <div className="flex flex-col lg:flex-row items-start lg:items-center gap-6">
+          <div style={sectionStyle}>
+            <div style={currentUserSectionStyle}>
+              <h2 style={sectionTitleStyle}>Your Status</h2>
+              <div style={currentUserContentLargeStyle}>
                 <TeamMemberCard member={currentTeamMember} isCurrentUser={true} />
-                <div className="flex-1">
+                <div style={statusSelectorStyle}>
                   <StatusSelector 
                     currentStatus={currentTeamMember.status} 
                     onStatusChange={handleStatusChange} 
@@ -90,9 +214,9 @@ const Index = () => {
         )}
 
         {/* Team Members Grid */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-bold text-white mb-6">Team Members</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div style={sectionStyle}>
+          <h2 style={sectionTitleStyle}>Team Members</h2>
+          <div style={gridStyle}>
             {teamMembers
               .filter(member => member.id !== currentTeamMember?.id)
               .map(member => (
@@ -102,25 +226,17 @@ const Index = () => {
         </div>
 
         {/* Stats Section */}
-        <div className="bg-slate-800 rounded-xl shadow-xl p-6 border border-slate-700">
-          <h3 className="text-xl font-bold text-white mb-6">Team Overview</h3>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div style={statsStyle}>
+          <h3 style={{ ...sectionTitleStyle, fontSize: '20px' }}>Team Overview</h3>
+          <div style={statsGridLargeStyle}>
             {(['available', 'busy', 'in-meeting', 'offline']).map(status => {
               const count = teamMembers.filter(member => member.status === status).length;
-              const statusColors = {
-                available: 'bg-emerald-500 text-white',
-                busy: 'bg-red-500 text-white',
-                'in-meeting': 'bg-amber-500 text-white',
-                offline: 'bg-slate-600 text-slate-200'
-              };
               
               return (
-                <div key={status} className="text-center">
-                  <div className={`rounded-lg p-4 ${statusColors[status]} shadow-lg`}>
-                    <div className="text-2xl font-bold">{count}</div>
-                    <div className="text-sm font-medium capitalize">
-                      {status.replace('-', ' ')}
-                    </div>
+                <div key={status} style={getStatCardStyle(status)}>
+                  <div style={statNumberStyle}>{count}</div>
+                  <div style={statLabelStyle}>
+                    {status.replace('-', ' ')}
                   </div>
                 </div>
               );

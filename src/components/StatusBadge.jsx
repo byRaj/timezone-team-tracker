@@ -5,36 +5,63 @@ export const StatusBadge = ({ status }) => {
   const statusConfig = {
     available: {
       label: 'Available',
-      color: 'bg-green-100 text-green-800 border-green-200 dark:bg-green-900 dark:text-green-200 dark:border-green-800',
+      backgroundColor: '#065f46',
+      textColor: '#a7f3d0',
+      borderColor: '#047857',
       icon: Circle,
-      iconColor: 'text-green-600 dark:text-green-400'
+      iconColor: '#10b981'
     },
     busy: {
       label: 'Do Not Disturb',
-      color: 'bg-red-100 text-red-800 border-red-200 dark:bg-red-900 dark:text-red-200 dark:border-red-800',
+      backgroundColor: '#7f1d1d',
+      textColor: '#fca5a5',
+      borderColor: '#dc2626',
       icon: Circle,
-      iconColor: 'text-red-600 dark:text-red-400'
+      iconColor: '#ef4444'
     },
     'in-meeting': {
       label: 'In a Meeting',
-      color: 'bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-900 dark:text-yellow-200 dark:border-yellow-800',
+      backgroundColor: '#78350f',
+      textColor: '#fcd34d',
+      borderColor: '#f59e0b',
       icon: Users,
-      iconColor: 'text-yellow-600 dark:text-yellow-400'
+      iconColor: '#f59e0b'
     },
     offline: {
       label: 'Offline',
-      color: 'bg-gray-100 text-gray-800 border-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600',
+      backgroundColor: '#374151',
+      textColor: '#d1d5db',
+      borderColor: '#6b7280',
       icon: Power,
-      iconColor: 'text-gray-600 dark:text-gray-400'
+      iconColor: '#9ca3af'
     }
   };
 
   const config = statusConfig[status];
   const Icon = config.icon;
 
+  const badgeStyle = {
+    display: 'inline-flex',
+    alignItems: 'center',
+    padding: '8px 12px',
+    borderRadius: '20px',
+    fontSize: '14px',
+    fontWeight: '500',
+    border: `1px solid ${config.borderColor}`,
+    backgroundColor: config.backgroundColor,
+    color: config.textColor,
+    gap: '8px'
+  };
+
+  const iconStyle = {
+    width: '16px',
+    height: '16px',
+    color: config.iconColor
+  };
+
   return (
-    <div className={`inline-flex items-center px-3 py-2 rounded-full text-sm font-medium border ${config.color}`}>
-      <Icon className={`w-4 h-4 mr-2 ${config.iconColor}`} />
+    <div style={badgeStyle}>
+      <Icon style={iconStyle} />
       {config.label}
     </div>
   );
