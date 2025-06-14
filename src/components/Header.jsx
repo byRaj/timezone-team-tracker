@@ -1,13 +1,14 @@
 
 import { useState, useEffect } from 'react';
-import { Clock, User } from 'lucide-react';
+import { Clock, User, LogOut } from 'lucide-react';
 import { ThemeToggle } from './ThemeToggle';
 import { AdminPanel } from './AdminPanel';
+import { Button } from '@/components/ui/button';
 import { useAdmin } from '../contexts/AdminContext';
 
 export const Header = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
-  const { currentUser } = useAdmin();
+  const { currentUser, logout } = useAdmin();
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -44,6 +45,10 @@ export const Header = () => {
               </div>
             )}
             <AdminPanel />
+            <Button onClick={logout} variant="outline" size="sm">
+              <LogOut className="w-4 h-4 mr-2" />
+              Logout
+            </Button>
             <ThemeToggle />
           </div>
         </div>

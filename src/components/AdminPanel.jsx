@@ -1,10 +1,9 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { UserPlus, Users, Trash2, Settings, LogOut } from 'lucide-react';
+import { UserPlus, Users, Trash2, Settings } from 'lucide-react';
 import { useAdmin } from '../contexts/AdminContext';
 import { UserManagement } from './UserManagement';
 
@@ -160,7 +159,7 @@ const TeamMembersList = () => {
 };
 
 export const AdminPanel = () => {
-  const { isAdminMode, toggleAdminMode, addTeamMember, logout, currentUser } = useAdmin();
+  const { isAdminMode, toggleAdminMode, addTeamMember, currentUser } = useAdmin();
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isManageSheetOpen, setIsManageSheetOpen] = useState(false);
 
@@ -206,11 +205,6 @@ export const AdminPanel = () => {
           </div>
         </SheetContent>
       </Sheet>
-
-      <Button onClick={logout} variant="outline" size="sm">
-        <LogOut className="w-4 h-4 mr-2" />
-        Logout
-      </Button>
     </div>
   );
 };
