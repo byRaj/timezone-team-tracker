@@ -1,3 +1,4 @@
+
 import { Circle, Phone, Users, Power } from 'lucide-react';
 
 export const StatusBadge = ({ status }) => {
