@@ -49,14 +49,14 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       <Header />
       
       <main className="container mx-auto px-4 py-8">
         {/* Current User Status Section */}
         <div className="mb-8">
-          <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-            <h2 className="text-2xl font-bold text-gray-800 mb-4">Your Status</h2>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-100 dark:border-gray-700">
+            <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">Your Status</h2>
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
               <TeamMemberCard member={currentUser} isCurrentUser={true} />
               <div className="flex-1">
@@ -71,7 +71,7 @@ const Index = () => {
 
         {/* Team Members Grid */}
         <div className="mb-8">
-          <h2 className="text-2xl font-bold text-gray-800 mb-6">Team Members</h2>
+          <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-6">Team Members</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {teamMembers
               .filter(member => member.id !== currentUser.id)
@@ -82,16 +82,16 @@ const Index = () => {
         </div>
 
         {/* Stats Section */}
-        <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-          <h3 className="text-xl font-bold text-gray-800 mb-4">Team Overview</h3>
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-100 dark:border-gray-700">
+          <h3 className="text-xl font-bold text-gray-800 dark:text-white mb-4">Team Overview</h3>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             {(['available', 'busy', 'in-meeting', 'offline'] as Status[]).map(status => {
               const count = teamMembers.filter(member => member.status === status).length;
               const statusColors = {
-                available: 'bg-green-100 text-green-800',
-                busy: 'bg-red-100 text-red-800',
-                'in-meeting': 'bg-yellow-100 text-yellow-800',
-                offline: 'bg-gray-100 text-gray-800'
+                available: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
+                busy: 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
+                'in-meeting': 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
+                offline: 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200'
               };
               
               return (
