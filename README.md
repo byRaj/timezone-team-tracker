@@ -41,6 +41,49 @@ A full-stack real-time team availability tracking application built with React, 
 - **CORS** enabled for cross-origin requests
 - **Environment variables** for configuration
 
+## Project Structure
+
+```
+├── frontend/                 # Frontend React application
+│   ├── src/                  # Frontend source code
+│   │   ├── components/       # React components
+│   │   │   ├── ui/          # shadcn/ui components
+│   │   │   ├── Header.jsx   # App header with navigation
+│   │   │   ├── TeamMemberCard.jsx # Individual team member display
+│   │   │   ├── StatusBadge.jsx # Status indicator component
+│   │   │   ├── StatusSelector.jsx # Status selection interface
+│   │   │   ├── AdminPanel.jsx # Admin management interface
+│   │   │   ├── AddPersonForm.jsx # Form for adding new members
+│   │   │   ├── Login.jsx    # Authentication component
+│   │   │   └── ThemeToggle.jsx # Dark/light theme toggle
+│   │   ├── contexts/        # React contexts
+│   │   │   ├── AdminContext.jsx # Admin state management
+│   │   │   └── ThemeContext.jsx # Theme state management
+│   │   ├── data/
+│   │   │   └── mockData.js  # Mock data and initial setup
+│   │   ├── utils/
+│   │   │   ├── timeUtils.js # Timezone and time utilities
+│   │   │   └── mongoApi.js  # API communication utilities
+│   │   └── pages/
+│   │       ├── Index.jsx    # Main application page
+│   │       └── NotFound.jsx # 404 error page
+│   ├── package.json         # Frontend dependencies
+│   ├── vite.config.js       # Vite configuration
+│   └── tailwind.config.ts   # Tailwind CSS configuration
+├── backend/                  # Backend Node.js application
+│   ├── models/
+│   │   └── TeamMember.js    # MongoDB schema for team members
+│   ├── routes/
+│   │   ├── teamMembers.js   # Team member API routes
+│   │   └── connection.js    # Database connection testing
+│   ├── scripts/
+│   │   └── seed.js          # Database seeding script
+│   ├── server.js            # Express server with Socket.IO
+│   ├── package.json         # Backend dependencies
+│   └── .env                 # Environment variables
+└── README.md                # Project documentation
+```
+
 ## Getting Started
 
 ### Prerequisites
@@ -59,7 +102,9 @@ cd team-availability-tracker
 
 2. **Install frontend dependencies:**
 ```bash
+cd frontend
 npm install
+cd ..
 ```
 
 3. **Install backend dependencies:**
@@ -100,6 +145,7 @@ npm run dev
 
 8. **Start the frontend development server:**
 ```bash
+cd frontend
 npm run dev
 ```
 
@@ -134,45 +180,6 @@ The server emits the following Socket.IO events:
 - `status-update` - When a team member's status changes
 - `member-added` - When a new team member is added
 - `member-removed` - When a team member is deleted
-
-## Project Structure
-
-```
-├── src/                      # Frontend source code
-│   ├── components/           # React components
-│   │   ├── ui/              # shadcn/ui components
-│   │   ├── Header.jsx       # App header with navigation
-│   │   ├── TeamMemberCard.jsx # Individual team member display
-│   │   ├── StatusBadge.jsx  # Status indicator component
-│   │   ├── StatusSelector.jsx # Status selection interface
-│   │   ├── AdminPanel.jsx   # Admin management interface
-│   │   ├── AddPersonForm.jsx # Form for adding new members
-│   │   ├── Login.jsx        # Authentication component
-│   │   └── ThemeToggle.jsx  # Dark/light theme toggle
-│   ├── contexts/            # React contexts
-│   │   ├── AdminContext.jsx # Admin state management
-│   │   └── ThemeContext.jsx # Theme state management
-│   ├── data/
-│   │   └── mockData.js      # Mock data and initial setup
-│   ├── utils/
-│   │   ├── timeUtils.js     # Timezone and time utilities
-│   │   └── mongoApi.js      # API communication utilities
-│   └── pages/
-│       ├── Index.jsx        # Main application page
-│       └── NotFound.jsx     # 404 error page
-├── backend/                  # Backend source code
-│   ├── models/
-│   │   └── TeamMember.js    # MongoDB schema for team members
-│   ├── routes/
-│   │   ├── teamMembers.js   # Team member API routes
-│   │   └── connection.js    # Database connection testing
-│   ├── scripts/
-│   │   └── seed.js          # Database seeding script
-│   ├── server.js            # Express server with Socket.IO
-│   ├── package.json         # Backend dependencies
-│   └── .env                 # Environment variables
-└── README.md                # Project documentation
-```
 
 ## MongoDB Schema
 
@@ -217,6 +224,7 @@ Team members are stored with the following structure:
 
 1. **Build the frontend:**
 ```bash
+cd frontend
 npm run build
 ```
 

@@ -1,4 +1,3 @@
-
 export const formatLocalTime = (timezone) => {
   try {
     const now = new Date();

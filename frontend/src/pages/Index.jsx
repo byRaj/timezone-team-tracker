@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { TeamMemberCard } from '../components/TeamMemberCard';
 import { StatusSelector } from '../components/StatusSelector';
