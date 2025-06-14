@@ -17,14 +17,25 @@ export const ThemeToggle = () => {
   };
 
   const iconStyle = {
-    width: '16px',
-    height: '16px',
-    color: theme === 'dark' ? '#9ca3af' : '#6b7280'
+    width: '12px',
+    height: '12px',
+    color: theme === 'dark' ? '#9ca3af' : '#6b7280',
+    transition: 'all 0.3s ease',
+    transform: 'scale(1)',
+    opacity: 0.6
   };
 
   const activeIconStyle = {
     ...iconStyle,
-    color: theme === 'dark' ? '#ffffff' : '#1f2937'
+    color: theme === 'dark' ? '#ffffff' : '#1f2937',
+    transform: 'scale(1.2)',
+    opacity: 1
+  };
+
+  const switchingStyle = {
+    ...iconStyle,
+    transform: 'scale(0.8) rotate(180deg)',
+    opacity: 0.3
   };
 
   return (
@@ -34,6 +45,10 @@ export const ThemeToggle = () => {
         checked={theme === 'dark'}
         onCheckedChange={toggleTheme}
         aria-label="Toggle dark mode"
+        style={{
+          transition: 'all 0.2s ease',
+          transform: 'scale(0.9)'
+        }}
       />
       <Moon style={theme === 'dark' ? activeIconStyle : iconStyle} />
     </div>
