@@ -6,7 +6,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { AdminProvider } from "./contexts/AdminContext";
-import { StyleDebug } from "./components/StyleDebug";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 
@@ -20,7 +19,6 @@ const App = () => {
       <ThemeProvider>
         <AdminProvider>
           <TooltipProvider>
-            <StyleDebug />
             <Toaster />
             <Sonner />
             <BrowserRouter>
