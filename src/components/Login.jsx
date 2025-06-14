@@ -59,13 +59,6 @@ export const Login = () => {
               Sign In
             </Button>
           </form>
-          
-          <div className="mt-6 text-center text-sm text-gray-600 dark:text-gray-400">
-            <p>Default admin credentials:</p>
-            <p className="font-mono bg-gray-100 dark:bg-gray-800 p-2 rounded mt-2">
-              ID: admin | Password: admin123
-            </p>
-          </div>
         </CardContent>
       </Card>
     </div>
