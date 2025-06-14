@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAdmin } from '../contexts/AdminContext';
-import { LogIn, Users } from 'lucide-react';
+import { LogIn, Users, Shield } from 'lucide-react';
 
 export const Login = () => {
   const [credentials, setCredentials] = useState({ id: '', password: '' });
@@ -19,58 +19,63 @@ export const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md shadow-lg">
-        <CardHeader className="text-center space-y-4">
-          <div className="flex justify-center">
-            <div className="bg-blue-100 dark:bg-blue-900 p-3 rounded-full">
-              <Users className="w-8 h-8 text-blue-600 dark:text-blue-400" />
-            </div>
+    <div className="min-h-screen bg-slate-900 flex items-center justify-center p-6">
+      <div className="w-full max-w-md">
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-emerald-500 rounded-full mb-4">
+            <Shield className="w-8 h-8 text-white" />
           </div>
-          <CardTitle className="text-2xl font-bold text-gray-900 dark:text-white">
-            Team Availability Tracker
-          </CardTitle>
-          <p className="text-gray-600 dark:text-gray-400">
-            Sign in to access your team dashboard
-          </p>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                User ID
-              </label>
-              <Input
-                type="text"
-                value={credentials.id}
-                onChange={(e) => setCredentials(prev => ({ ...prev, id: e.target.value }))}
-                placeholder="Enter your user ID"
-                required
-                className="w-full"
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                Password
-              </label>
-              <Input
-                type="password"
-                value={credentials.password}
-                onChange={(e) => setCredentials(prev => ({ ...prev, password: e.target.value }))}
-                placeholder="Enter your password"
-                required
-                className="w-full"
-              />
-            </div>
-            
-            <Button type="submit" className="w-full mt-6">
-              <LogIn className="w-4 h-4 mr-2" />
-              Sign In
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
+          <h1 className="text-3xl font-bold text-white mb-2">Welcome Back</h1>
+          <p className="text-slate-400">Access your team dashboard</p>
+        </div>
+
+        <Card className="bg-slate-800 border-slate-700 shadow-2xl">
+          <CardHeader className="space-y-1 pb-6">
+            <CardTitle className="text-xl text-center text-white">
+              Sign in to continue
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-slate-300">
+                  User ID
+                </label>
+                <Input
+                  type="text"
+                  value={credentials.id}
+                  onChange={(e) => setCredentials(prev => ({ ...prev, id: e.target.value }))}
+                  placeholder="Enter your user ID"
+                  required
+                  className="bg-slate-700 border-slate-600 text-white placeholder:text-slate-400 focus:border-emerald-500 focus:ring-emerald-500"
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-slate-300">
+                  Password
+                </label>
+                <Input
+                  type="password"
+                  value={credentials.password}
+                  onChange={(e) => setCredentials(prev => ({ ...prev, password: e.target.value }))}
+                  placeholder="Enter your password"
+                  required
+                  className="bg-slate-700 border-slate-600 text-white placeholder:text-slate-400 focus:border-emerald-500 focus:ring-emerald-500"
+                />
+              </div>
+              
+              <Button 
+                type="submit" 
+                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2.5 mt-6"
+              >
+                <LogIn className="w-4 h-4 mr-2" />
+                Sign In
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };
