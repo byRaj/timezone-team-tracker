@@ -9,16 +9,16 @@ export const ThemeToggle = () => {
   const containerStyle = {
     display: 'flex',
     alignItems: 'center',
-    gap: '8px',
-    padding: '8px 12px',
+    gap: '6px',
+    padding: '6px 10px',
     borderRadius: '8px',
     backgroundColor: theme === 'dark' ? '#374151' : '#f1f5f9',
     border: theme === 'dark' ? '1px solid #4b5563' : '1px solid #d1d5db'
   };
 
   const iconStyle = {
-    width: '12px',
-    height: '12px',
+    width: '10px',
+    height: '10px',
     color: theme === 'dark' ? '#9ca3af' : '#6b7280',
     transition: 'all 0.3s ease',
     transform: 'scale(1)',
@@ -28,7 +28,7 @@ export const ThemeToggle = () => {
   const activeIconStyle = {
     ...iconStyle,
     color: theme === 'dark' ? '#ffffff' : '#1f2937',
-    transform: 'scale(1.2)',
+    transform: 'scale(1.1)',
     opacity: 1
   };
 
@@ -47,7 +47,7 @@ export const ThemeToggle = () => {
         aria-label="Toggle dark mode"
         style={{
           transition: 'all 0.2s ease',
-          transform: 'scale(0.9)'
+          transform: 'scale(0.8)'
         }}
       />
       <Moon style={theme === 'dark' ? activeIconStyle : iconStyle} />
