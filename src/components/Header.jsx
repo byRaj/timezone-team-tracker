@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { Clock, User, LogOut, Menu } from 'lucide-react';
+import { Clock, User, LogOut } from 'lucide-react';
 import { ThemeToggle } from './ThemeToggle';
 import { AdminPanel } from './AdminPanel';
 import { Button } from '@/components/ui/button';
@@ -18,51 +18,131 @@ export const Header = () => {
     return () => clearInterval(timer);
   }, []);
 
+  const headerStyle = {
+    backgroundColor: '#1e293b',
+    borderBottom: '1px solid #374151',
+    position: 'sticky',
+    top: 0,
+    zIndex: 40,
+    boxShadow: '0 10px 25px -3px rgba(0, 0, 0, 0.1)'
+  };
+
+  const containerStyle = {
+    maxWidth: '1280px',
+    margin: '0 auto',
+    padding: '0 16px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    height: '64px'
+  };
+
+  const logoStyle = {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px'
+  };
+
+  const logoIconStyle = {
+    width: '32px',
+    height: '32px',
+    backgroundColor: '#10b981',
+    borderRadius: '8px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center'
+  };
+
+  const timeStyle = {
+    display: 'flex',
+    alignItems: 'center',
+    fontSize: '14px',
+    color: '#94a3b8',
+    backgroundColor: '#374151',
+    padding: '4px 12px',
+    borderRadius: '20px',
+    gap: '8px'
+  };
+
+  const userInfoStyle = {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px',
+    fontSize: '14px',
+    color: '#d1d5db',
+    backgroundColor: '#374151',
+    padding: '8px 12px',
+    borderRadius: '8px'
+  };
+
+  const userAvatarStyle = {
+    width: '24px',
+    height: '24px',
+    backgroundColor: '#10b981',
+    borderRadius: '50%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center'
+  };
+
+  const adminBadgeStyle = {
+    backgroundColor: '#10b981',
+    color: '#ffffff',
+    padding: '2px 8px',
+    borderRadius: '12px',
+    fontSize: '12px',
+    fontWeight: '600'
+  };
+
+  const actionButtonStyle = {
+    border: '1px solid #4b5563',
+    backgroundColor: '#374151',
+    color: '#d1d5db',
+    padding: '8px 12px',
+    borderRadius: '6px',
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    fontSize: '14px'
+  };
+
   return (
-    <header className="bg-slate-800 border-b border-slate-700 sticky top-0 z-40 shadow-lg">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center">
-                <User className="w-5 h-5 text-white" />
-              </div>
-              <h1 className="text-xl sm:text-2xl font-bold text-white">
-                Team Tracker
-              </h1>
+    <header style={headerStyle}>
+      <div style={containerStyle}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <div style={logoStyle}>
+            <div style={logoIconStyle}>
+              <User size={20} color="white" />
             </div>
-            <div className="hidden sm:flex items-center text-sm text-slate-400 bg-slate-700 px-3 py-1 rounded-full">
-              <Clock className="w-4 h-4 mr-2" />
-              {currentTime.toLocaleTimeString()}
-            </div>
+            <h1 style={{ fontSize: '24px', fontWeight: 'bold', color: '#ffffff' }}>
+              Team Tracker
+            </h1>
           </div>
-          
-          <div className="flex items-center space-x-3">
-            {currentUser && (
-              <div className="flex items-center gap-3 text-sm text-slate-300 bg-slate-700 px-3 py-2 rounded-lg">
-                <div className="w-6 h-6 bg-emerald-500 rounded-full flex items-center justify-center">
-                  <User className="w-3 h-3 text-white" />
-                </div>
-                <span className="hidden sm:inline font-medium">{currentUser.name}</span>
-                {currentUser.role === 'admin' && (
-                  <span className="bg-emerald-500 text-white px-2 py-1 rounded-full text-xs font-medium">
-                    Admin
-                  </span>
-                )}
+          <div style={timeStyle}>
+            <Clock size={16} />
+            {currentTime.toLocaleTimeString()}
+          </div>
+        </div>
+        
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          {currentUser && (
+            <div style={userInfoStyle}>
+              <div style={userAvatarStyle}>
+                <User size={12} color="white" />
               </div>
-            )}
-            <AdminPanel />
-            <Button 
-              onClick={logout} 
-              variant="outline" 
-              size="sm"
-              className="border-slate-600 bg-slate-700 text-slate-300 hover:bg-slate-600 hover:text-white"
-            >
-              <LogOut className="w-4 h-4 mr-2" />
-              <span className="hidden sm:inline">Logout</span>
-            </Button>
-            <ThemeToggle />
-          </div>
+              <span style={{ fontWeight: '500' }}>{currentUser.name}</span>
+              {currentUser.role === 'admin' && (
+                <span style={adminBadgeStyle}>Admin</span>
+              )}
+            </div>
+          )}
+          <AdminPanel />
+          <button onClick={logout} style={actionButtonStyle}>
+            <LogOut size={16} />
+            Logout
+          </button>
+          <ThemeToggle />
         </div>
       </div>
     </header>
