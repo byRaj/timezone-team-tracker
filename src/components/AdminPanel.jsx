@@ -1,20 +1,135 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { UserPlus, Users, Trash2 } from 'lucide-react';
+import { UserPlus, Users, Trash2, Settings } from 'lucide-react';
 import { useAdmin } from '../contexts/AdminContext';
-import { AddPersonForm } from './AddPersonForm';
+import { UserManagement } from './UserManagement';
+
+const AddMemberForm = ({ onAdd, onClose }) => {
+  const [formData, setFormData] = useState({
+    name: '',
+    role: '',
+    avatar: '',
+    status: 'available',
+    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    location: '',
+    workingHours: { start: 9, end: 17 }
+  });
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!formData.name || !formData.role) {
+      return;
+    }
+    
+    onAdd(formData);
+    setFormData({
+      name: '',
+      role: '',
+      avatar: '',
+      status: 'available',
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      location: '',
+      workingHours: { start: 9, end: 17 }
+    });
+    onClose();
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div>
+        <label className="text-sm font-medium">Name *</label>
+        <Input
+          value={formData.name}
+          onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+          placeholder="Enter name"
+          required
+        />
+      </div>
+      
+      <div>
+        <label className="text-sm font-medium">Role *</label>
+        <Input
+          value={formData.role}
+          onChange={(e) => setFormData(prev => ({ ...prev, role: e.target.value }))}
+          placeholder="Enter role"
+          required
+        />
+      </div>
+      
+      <div>
+        <label className="text-sm font-medium">Avatar URL</label>
+        <Input
+          value={formData.avatar}
+          onChange={(e) => setFormData(prev => ({ ...prev, avatar: e.target.value }))}
+          placeholder="https://images.unsplash.com/..."
+        />
+      </div>
+      
+      <div>
+        <label className="text-sm font-medium">Location</label>
+        <Input
+          value={formData.location}
+          onChange={(e) => setFormData(prev => ({ ...prev, location: e.target.value }))}
+          placeholder="City, Country"
+        />
+      </div>
+      
+      <div>
+        <label className="text-sm font-medium">Timezone</label>
+        <Input
+          value={formData.timezone}
+          onChange={(e) => setFormData(prev => ({ ...prev, timezone: e.target.value }))}
+          placeholder="America/New_York"
+        />
+      </div>
+      
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="text-sm font-medium">Start Hour (24h)</label>
+          <Input
+            type="number"
+            min="0"
+            max="23"
+            value={formData.workingHours.start}
+            onChange={(e) => setFormData(prev => ({ 
+              ...prev, 
+              workingHours: { ...prev.workingHours, start: parseInt(e.target.value) }
+            }))}
+          />
+        </div>
+        <div>
+          <label className="text-sm font-medium">End Hour (24h)</label>
+          <Input
+            type="number"
+            min="0"
+            max="23"
+            value={formData.workingHours.end}
+            onChange={(e) => setFormData(prev => ({ 
+              ...prev, 
+              workingHours: { ...prev.workingHours, end: parseInt(e.target.value) }
+            }))}
+          />
+        </div>
+      </div>
+      
+      <div className="flex gap-2 pt-4">
+        <Button type="submit" className="flex-1">
+          <UserPlus className="w-4 h-4 mr-2" />
+          Add Member
+        </Button>
+        <Button type="button" variant="outline" onClick={onClose}>
+          Cancel
+        </Button>
+      </div>
+    </form>
+  );
+};
 
 const TeamMembersList = () => {
-  const { teamMembers, removeTeamMember, removeUserCredential } = useAdmin();
-
-  const handleRemoveMember = (member) => {
-    removeTeamMember(member.id);
-    // Also remove user credentials if they exist
-    removeUserCredential(member.id);
-  };
+  const { teamMembers, removeTeamMember } = useAdmin();
 
   return (
     <div className="space-y-2 max-h-96 overflow-y-auto">
@@ -27,15 +142,12 @@ const TeamMembersList = () => {
             <div>
               <div className="font-medium">{member.name}</div>
               <div className="text-sm text-gray-500">{member.role}</div>
-              {member.location && (
-                <div className="text-xs text-gray-400">{member.location}</div>
-              )}
             </div>
           </div>
           <Button
             variant="destructive"
             size="sm"
-            onClick={() => handleRemoveMember(member)}
+            onClick={() => removeTeamMember(member.id)}
             className="h-8 w-8 p-0"
           >
             <Trash2 className="w-4 h-4" />
@@ -47,7 +159,7 @@ const TeamMembersList = () => {
 };
 
 export const AdminPanel = () => {
-  const { isAdminMode, addPerson, currentUser } = useAdmin();
+  const { isAdminMode, toggleAdminMode, addTeamMember, currentUser } = useAdmin();
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isManageSheetOpen, setIsManageSheetOpen] = useState(false);
 
@@ -57,19 +169,21 @@ export const AdminPanel = () => {
 
   return (
     <div className="flex gap-2">
+      <UserManagement />
+      
       <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
         <DialogTrigger asChild>
           <Button size="sm">
             <UserPlus className="w-4 h-4 mr-2" />
-            Add Person
+            Add Member
           </Button>
         </DialogTrigger>
         <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Add New Person</DialogTitle>
+            <DialogTitle>Add New Team Member</DialogTitle>
           </DialogHeader>
-          <AddPersonForm 
-            onAdd={addPerson} 
+          <AddMemberForm 
+            onAdd={addTeamMember} 
             onClose={() => setIsAddDialogOpen(false)}
           />
         </DialogContent>
