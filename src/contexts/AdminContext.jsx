@@ -16,11 +16,56 @@ export const useAdmin = () => {
 export const AdminProvider = ({ children }) => {
   const [isAdminMode, setIsAdminMode] = useState(false);
   const [teamMembers, setTeamMembers] = useState(mockTeamMembers);
+  const [userCredentials, setUserCredentials] = useState([
+    // Default admin account
+    { id: 'admin', password: 'admin123', role: 'admin', name: 'Administrator' }
+  ]);
+  const [currentUser, setCurrentUser] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  const login = (userId, password) => {
+    const user = userCredentials.find(cred => cred.id === userId && cred.password === password);
+    if (user) {
+      setCurrentUser(user);
+      setIsAuthenticated(true);
+      if (user.role === 'admin') {
+        setIsAdminMode(true);
+      }
+      toast.success(`Welcome, ${user.name}!`);
+      return true;
+    } else {
+      toast.error('Invalid credentials');
+      return false;
+    }
+  };
+
+  const logout = () => {
+    setCurrentUser(null);
+    setIsAuthenticated(false);
+    setIsAdminMode(false);
+    toast.success('Logged out successfully');
+  };
+
+  const addUserCredential = (credentialData) => {
+    const newCredential = {
+      ...credentialData,
+      role: credentialData.role || 'member'
+    };
+    
+    setUserCredentials(prev => [...prev, newCredential]);
+    toast.success(`User credentials created for ${credentialData.name}`);
+  };
+
+  const removeUserCredential = (userId) => {
+    const user = userCredentials.find(cred => cred.id === userId);
+    setUserCredentials(prev => prev.filter(cred => cred.id !== userId));
+    toast.success(`User credentials removed for ${user?.name}`);
+  };
 
   const addTeamMember = (memberData) => {
     const newMember = {
       ...memberData,
-      id: Date.now().toString(), // Simple ID generation
+      id: Date.now().toString(),
       lastUpdated: new Date(),
     };
     
@@ -45,8 +90,12 @@ export const AdminProvider = ({ children }) => {
   };
 
   const toggleAdminMode = () => {
-    setIsAdminMode(prev => !prev);
-    toast.info(isAdminMode ? 'Admin mode disabled' : 'Admin mode enabled');
+    if (currentUser?.role === 'admin') {
+      setIsAdminMode(prev => !prev);
+      toast.info(isAdminMode ? 'Admin mode disabled' : 'Admin mode enabled');
+    } else {
+      toast.error('Only administrators can enable admin mode');
+    }
   };
 
   return (
@@ -58,6 +107,13 @@ export const AdminProvider = ({ children }) => {
       removeTeamMember,
       updateTeamMember,
       toggleAdminMode,
+      userCredentials,
+      addUserCredential,
+      removeUserCredential,
+      currentUser,
+      isAuthenticated,
+      login,
+      logout,
     }}>
       {children}
     </AdminContext.Provider>

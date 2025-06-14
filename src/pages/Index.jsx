@@ -3,29 +3,32 @@ import { useState, useEffect } from 'react';
 import { TeamMemberCard } from '../components/TeamMemberCard';
 import { StatusSelector } from '../components/StatusSelector';
 import { Header } from '../components/Header';
+import { Login } from '../components/Login';
 import { useAdmin } from '../contexts/AdminContext';
 import { toast } from 'sonner';
 
 const Index = () => {
-  const { teamMembers, updateTeamMember } = useAdmin();
-  const [currentUser, setCurrentUser] = useState(teamMembers[0]);
+  const { teamMembers, updateTeamMember, isAuthenticated, currentUser } = useAdmin();
+  const [currentTeamMember, setCurrentTeamMember] = useState(null);
 
-  // Update current user when team members change
+  // If not authenticated, show login page
+  if (!isAuthenticated) {
+    return <Login />;
+  }
+
+  // Find current user's team member data
   useEffect(() => {
-    const updatedCurrentUser = teamMembers.find(member => member.id === currentUser?.id);
-    if (updatedCurrentUser) {
-      setCurrentUser(updatedCurrentUser);
-    } else if (teamMembers.length > 0 && !updatedCurrentUser) {
-      // If current user was deleted, set first available user as current
-      setCurrentUser(teamMembers[0]);
+    if (currentUser && teamMembers.length > 0) {
+      const memberData = teamMembers.find(member => member.name === currentUser.name) || teamMembers[0];
+      setCurrentTeamMember(memberData);
     }
-  }, [teamMembers, currentUser?.id]);
+  }, [currentUser, teamMembers]);
 
   // Simulate real-time updates
   useEffect(() => {
     const interval = setInterval(() => {
       // Randomly update a team member's status (excluding current user)
-      const otherMembers = teamMembers.filter(member => member.id !== currentUser?.id);
+      const otherMembers = teamMembers.filter(member => member.id !== currentTeamMember?.id);
       if (otherMembers.length > 0) {
         const randomMember = otherMembers[Math.floor(Math.random() * otherMembers.length)];
         const statuses = ['available', 'busy', 'in-meeting', 'offline'];
@@ -38,14 +41,14 @@ const Index = () => {
     }, 10000); // Update every 10 seconds
 
     return () => clearInterval(interval);
-  }, [teamMembers, currentUser?.id, updateTeamMember]);
+  }, [teamMembers, currentTeamMember?.id, updateTeamMember]);
 
   const handleStatusChange = (newStatus) => {
-    if (!currentUser) return;
+    if (!currentTeamMember) return;
     
-    const updatedUser = { ...currentUser, status: newStatus, lastUpdated: new Date() };
-    setCurrentUser(updatedUser);
-    updateTeamMember(currentUser.id, { status: newStatus });
+    const updatedMember = { ...currentTeamMember, status: newStatus, lastUpdated: new Date() };
+    setCurrentTeamMember(updatedMember);
+    updateTeamMember(currentTeamMember.id, { status: newStatus });
 
     toast.success(`Status updated to ${newStatus.charAt(0).toUpperCase() + newStatus.slice(1).replace('-', ' ')}`);
   };
@@ -70,15 +73,15 @@ const Index = () => {
       
       <main className="container mx-auto px-4 py-8">
         {/* Current User Status Section */}
-        {currentUser && (
+        {currentTeamMember && (
           <div className="mb-8">
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-100 dark:border-gray-700">
               <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">Your Status</h2>
               <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
-                <TeamMemberCard member={currentUser} isCurrentUser={true} />
+                <TeamMemberCard member={currentTeamMember} isCurrentUser={true} />
                 <div className="flex-1">
                   <StatusSelector 
-                    currentStatus={currentUser.status} 
+                    currentStatus={currentTeamMember.status} 
                     onStatusChange={handleStatusChange} 
                   />
                 </div>
@@ -92,7 +95,7 @@ const Index = () => {
           <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-6">Team Members</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {teamMembers
-              .filter(member => member.id !== currentUser?.id)
+              .filter(member => member.id !== currentTeamMember?.id)
               .map(member => (
                 <TeamMemberCard key={member.id} member={member} />
               ))}

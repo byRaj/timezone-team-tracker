@@ -4,8 +4,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { UserPlus, Users, Trash2, Settings } from 'lucide-react';
+import { UserPlus, Users, Trash2, Settings, LogOut } from 'lucide-react';
 import { useAdmin } from '../contexts/AdminContext';
+import { UserManagement } from './UserManagement';
 
 const AddMemberForm = ({ onAdd, onClose }) => {
   const [formData, setFormData] = useState({
@@ -159,21 +160,18 @@ const TeamMembersList = () => {
 };
 
 export const AdminPanel = () => {
-  const { isAdminMode, toggleAdminMode, addTeamMember } = useAdmin();
+  const { isAdminMode, toggleAdminMode, addTeamMember, logout, currentUser } = useAdmin();
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isManageSheetOpen, setIsManageSheetOpen] = useState(false);
 
-  if (!isAdminMode) {
-    return (
-      <Button onClick={toggleAdminMode} variant="outline" size="sm">
-        <Settings className="w-4 h-4 mr-2" />
-        Enable Admin
-      </Button>
-    );
+  if (!isAdminMode || currentUser?.role !== 'admin') {
+    return null;
   }
 
   return (
     <div className="flex gap-2">
+      <UserManagement />
+      
       <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
         <DialogTrigger asChild>
           <Button size="sm">
@@ -209,9 +207,9 @@ export const AdminPanel = () => {
         </SheetContent>
       </Sheet>
 
-      <Button onClick={toggleAdminMode} variant="outline" size="sm">
-        <Settings className="w-4 h-4 mr-2" />
-        Disable Admin
+      <Button onClick={logout} variant="outline" size="sm">
+        <LogOut className="w-4 h-4 mr-2" />
+        Logout
       </Button>
     </div>
   );
