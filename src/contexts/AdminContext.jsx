@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { toast } from 'sonner';
 
@@ -74,12 +75,13 @@ export const useAdmin = () => {
 
 export const AdminProvider = ({ children }) => {
   const [isAdminMode, setIsAdminMode] = useState(false);
-  const [teamMembers, setTeamMembers] = useState([]);
+  const [teamMembers, setTeamMembers] = useState([DEFAULT_ADMIN]); // Start with fallback admin
   const [currentUser, setCurrentUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [isApiAvailable, setIsApiAvailable] = useState(false);
 
-  // Load team members on mount, but don't auto-authenticate
+  // Load team members on mount
   useEffect(() => {
     loadTeamMembers();
   }, []);
@@ -87,14 +89,17 @@ export const AdminProvider = ({ children }) => {
   const loadTeamMembers = async () => {
     try {
       setLoading(true);
+      console.log('Attempting to load team members from API...');
       const members = await api.getTeamMembers();
-      console.log('Loaded team members:', members);
+      console.log('Loaded team members from API:', members);
       setTeamMembers(members);
+      setIsApiAvailable(true);
     } catch (error) {
       console.error('Failed to load team members:', error);
       console.log('Using fallback admin user');
       // Use fallback admin user when API is unavailable
       setTeamMembers([DEFAULT_ADMIN]);
+      setIsApiAvailable(false);
       toast.error('API unavailable - using demo admin user');
     } finally {
       setLoading(false);
@@ -116,9 +121,11 @@ export const AdminProvider = ({ children }) => {
       setCurrentUser(user);
       setIsAuthenticated(true);
       setIsAdminMode(user.role === 'admin');
+      setIsApiAvailable(true);
     } catch (error) {
       console.error('Failed to load team data:', error);
       toast.error('Failed to load team data');
+      setIsApiAvailable(false);
     } finally {
       setLoading(false);
     }
@@ -128,6 +135,7 @@ export const AdminProvider = ({ children }) => {
     try {
       console.log('Attempting login for:', userId);
       console.log('Available team members:', teamMembers);
+      console.log('Team members length:', teamMembers.length);
       
       // For demo purposes, we'll check if the userId matches any team member's email or name
       // and use a simple password check (in production, this would be handled by the backend)
@@ -168,18 +176,43 @@ export const AdminProvider = ({ children }) => {
 
   const addPerson = async (personData) => {
     try {
-      console.log('Adding person to MongoDB:', personData);
-      const newMember = await api.createTeamMember(personData);
-      console.log('Created member:', newMember);
+      console.log('Adding person:', personData);
       
-      setTeamMembers(prev => [...prev, newMember]);
-      toast.success(`${personData.name} has been added to the team`);
-      
-      // Reload team data to ensure consistency
-      await loadTeamMembers();
+      if (isApiAvailable) {
+        console.log('Adding person to MongoDB:', personData);
+        const newMember = await api.createTeamMember(personData);
+        console.log('Created member:', newMember);
+        
+        setTeamMembers(prev => [...prev, newMember]);
+        toast.success(`${personData.name} has been added to the team`);
+        
+        // Reload team data to ensure consistency
+        await loadTeamMembers();
+      } else {
+        console.log('API unavailable, adding person locally:', personData);
+        // Add to local state when API is unavailable
+        const newMember = {
+          ...personData,
+          _id: `local-${Date.now()}`,
+          lastUpdated: new Date()
+        };
+        
+        setTeamMembers(prev => [...prev, newMember]);
+        toast.success(`${personData.name} has been added locally (API unavailable)`);
+      }
     } catch (error) {
       console.error('Failed to add person:', error);
-      toast.error('Failed to add team member');
+      
+      // Fallback to local addition if API fails
+      console.log('API failed, adding person locally:', personData);
+      const newMember = {
+        ...personData,
+        _id: `local-${Date.now()}`,
+        lastUpdated: new Date()
+      };
+      
+      setTeamMembers(prev => [...prev, newMember]);
+      toast.success(`${personData.name} has been added locally (API unavailable)`);
     }
   };
 
@@ -189,19 +222,28 @@ export const AdminProvider = ({ children }) => {
 
   const removeTeamMember = async (memberId) => {
     try {
-      await api.deleteTeamMember(memberId);
+      if (isApiAvailable) {
+        await api.deleteTeamMember(memberId);
+      }
+      
       const member = teamMembers.find(m => m._id === memberId);
       setTeamMembers(prev => prev.filter(member => member._id !== memberId));
       toast.success(`${member?.name} has been removed from the team`);
     } catch (error) {
       console.error('Failed to remove team member:', error);
-      toast.error('Failed to remove team member');
+      // Still remove locally even if API fails
+      const member = teamMembers.find(m => m._id === memberId);
+      setTeamMembers(prev => prev.filter(member => member._id !== memberId));
+      toast.success(`${member?.name} has been removed locally`);
     }
   };
 
   const updateTeamMember = async (memberId, updates) => {
     try {
-      const updatedMember = await api.updateTeamMember(memberId, updates);
+      if (isApiAvailable) {
+        const updatedMember = await api.updateTeamMember(memberId, updates);
+      }
+      
       setTeamMembers(prev => 
         prev.map(member => 
           member._id === memberId 
@@ -211,7 +253,14 @@ export const AdminProvider = ({ children }) => {
       );
     } catch (error) {
       console.error('Failed to update team member:', error);
-      toast.error('Failed to update team member');
+      // Still update locally even if API fails
+      setTeamMembers(prev => 
+        prev.map(member => 
+          member._id === memberId 
+            ? { ...member, ...updates, lastUpdated: new Date() }
+            : member
+        )
+      );
     }
   };
 
@@ -252,6 +301,7 @@ export const AdminProvider = ({ children }) => {
       logout,
       loading,
       loadTeamData,
+      isApiAvailable,
     }}>
       {children}
     </AdminContext.Provider>
