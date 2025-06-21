@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { toast } from 'sonner';
 
@@ -67,10 +68,24 @@ export const AdminProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // Load team members and current user on mount
+  // Load team members on mount, but don't auto-authenticate
   useEffect(() => {
-    loadTeamData();
+    loadTeamMembers();
   }, []);
+
+  const loadTeamMembers = async () => {
+    try {
+      setLoading(true);
+      const members = await api.getTeamMembers();
+      console.log('Loaded team members:', members);
+      setTeamMembers(members);
+    } catch (error) {
+      console.error('Failed to load team members:', error);
+      toast.error('Failed to load team data');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const loadTeamData = async () => {
     try {
@@ -85,7 +100,7 @@ export const AdminProvider = ({ children }) => {
       
       setTeamMembers(members);
       setCurrentUser(user);
-      setIsAuthenticated(true); // Auto-authenticate for demo
+      setIsAuthenticated(true);
       setIsAdminMode(user.role === 'admin');
     } catch (error) {
       console.error('Failed to load team data:', error);
@@ -95,17 +110,32 @@ export const AdminProvider = ({ children }) => {
     }
   };
 
-  const login = (userId, password) => {
-    // For demo purposes, just use the current user from MongoDB
-    if (currentUser) {
-      setIsAuthenticated(true);
-      if (currentUser.role === 'admin') {
-        setIsAdminMode(true);
+  const login = async (userId, password) => {
+    try {
+      // For demo purposes, we'll check if the userId matches any team member's email or name
+      // and use a simple password check (in production, this would be handled by the backend)
+      const user = teamMembers.find(member => 
+        member.email === userId || 
+        member.name.toLowerCase() === userId.toLowerCase() ||
+        member._id === userId
+      );
+      
+      if (user && password === 'admin') { // Simple demo password
+        setCurrentUser(user);
+        setIsAuthenticated(true);
+        setIsAdminMode(user.role === 'admin');
+        toast.success(`Welcome, ${user.name}!`);
+        return true;
+      } else if (user) {
+        toast.error('Invalid password');
+        return false;
+      } else {
+        toast.error('User not found');
+        return false;
       }
-      toast.success(`Welcome, ${currentUser.name}!`);
-      return true;
-    } else {
-      toast.error('Invalid credentials');
+    } catch (error) {
+      console.error('Login error:', error);
+      toast.error('Login failed');
       return false;
     }
   };
@@ -127,7 +157,7 @@ export const AdminProvider = ({ children }) => {
       toast.success(`${personData.name} has been added to the team`);
       
       // Reload team data to ensure consistency
-      await loadTeamData();
+      await loadTeamMembers();
     } catch (error) {
       console.error('Failed to add person:', error);
       toast.error('Failed to add team member');
