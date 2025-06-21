@@ -39,15 +39,14 @@ const getTimezoneForLocation = (location) => {
 
 export const AddPersonForm = ({ onAdd, onClose }) => {
   const [formData, setFormData] = useState({
-    id: '',
-    password: '',
     name: '',
+    email: '',
     role: 'member',
     avatar: '',
     status: 'available',
     timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
     location: '',
-    workingHours: { start: 9, end: 17 }
+    workingHours: { start: '09:00', end: '17:00' }
   });
 
   const [locationSuggestions, setLocationSuggestions] = useState([]);
@@ -85,21 +84,20 @@ export const AddPersonForm = ({ onAdd, onClose }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!formData.id || !formData.password || !formData.name) {
+    if (!formData.name || !formData.email) {
       return;
     }
     
     onAdd(formData);
     setFormData({
-      id: '',
-      password: '',
       name: '',
+      email: '',
       role: 'member',
       avatar: '',
       status: 'available',
       timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       location: '',
-      workingHours: { start: 9, end: 17 }
+      workingHours: { start: '09:00', end: '17:00' }
     });
     onClose();
   };
@@ -107,32 +105,22 @@ export const AddPersonForm = ({ onAdd, onClose }) => {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label className="text-sm font-medium">User ID *</label>
-        <Input
-          value={formData.id}
-          onChange={(e) => setFormData(prev => ({ ...prev, id: e.target.value }))}
-          placeholder="Enter unique user ID"
-          required
-        />
-      </div>
-      
-      <div>
-        <label className="text-sm font-medium">Password *</label>
-        <Input
-          type="password"
-          value={formData.password}
-          onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
-          placeholder="Enter password"
-          required
-        />
-      </div>
-      
-      <div>
         <label className="text-sm font-medium">Full Name *</label>
         <Input
           value={formData.name}
           onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
           placeholder="Enter full name"
+          required
+        />
+      </div>
+      
+      <div>
+        <label className="text-sm font-medium">Email *</label>
+        <Input
+          type="email"
+          value={formData.email}
+          onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+          placeholder="Enter email address"
           required
         />
       </div>
@@ -146,6 +134,8 @@ export const AddPersonForm = ({ onAdd, onClose }) => {
           <SelectContent>
             <SelectItem value="member">Member</SelectItem>
             <SelectItem value="admin">Admin</SelectItem>
+            <SelectItem value="lead">Lead</SelectItem>
+            <SelectItem value="manager">Manager</SelectItem>
           </SelectContent>
         </Select>
       </div>
@@ -195,28 +185,24 @@ export const AddPersonForm = ({ onAdd, onClose }) => {
       
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="text-sm font-medium">Start Hour (24h)</label>
+          <label className="text-sm font-medium">Start Time</label>
           <Input
-            type="number"
-            min="0"
-            max="23"
+            type="time"
             value={formData.workingHours.start}
             onChange={(e) => setFormData(prev => ({ 
               ...prev, 
-              workingHours: { ...prev.workingHours, start: parseInt(e.target.value) }
+              workingHours: { ...prev.workingHours, start: e.target.value }
             }))}
           />
         </div>
         <div>
-          <label className="text-sm font-medium">End Hour (24h)</label>
+          <label className="text-sm font-medium">End Time</label>
           <Input
-            type="number"
-            min="0"
-            max="23"
+            type="time"
             value={formData.workingHours.end}
             onChange={(e) => setFormData(prev => ({ 
               ...prev, 
-              workingHours: { ...prev.workingHours, end: parseInt(e.target.value) }
+              workingHours: { ...prev.workingHours, end: e.target.value }
             }))}
           />
         </div>

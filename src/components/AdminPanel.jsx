@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -9,13 +8,12 @@ import { useTheme } from '../contexts/ThemeContext';
 import { AddPersonForm } from './AddPersonForm';
 
 const TeamMembersList = () => {
-  const { teamMembers, removeTeamMember, removeUserCredential } = useAdmin();
+  const { teamMembers, removeTeamMember } = useAdmin();
   const { theme } = useTheme();
 
   const handleRemoveMember = (member) => {
-    removeTeamMember(member.id);
-    // Also remove user credentials if they exist
-    removeUserCredential(member.id);
+    // Use _id for MongoDB documents
+    removeTeamMember(member._id);
   };
 
   const memberItemStyle = {
@@ -64,7 +62,7 @@ const TeamMembersList = () => {
   return (
     <div style={{ maxHeight: '384px', overflowY: 'auto' }}>
       {teamMembers.map(member => (
-        <div key={member.id} style={memberItemStyle}>
+        <div key={member._id} style={memberItemStyle}>
           <div style={memberInfoStyle}>
             {member.avatar && (
               <img src={member.avatar} alt={member.name} style={{ width: '32px', height: '32px', borderRadius: '50%' }} />

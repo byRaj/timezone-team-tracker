@@ -1,9 +1,57 @@
 
-import React, { createContext, useContext, useState } from 'react';
-import { mockTeamMembers } from '../data/mockData';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { toast } from 'sonner';
 
 const AdminContext = createContext();
+
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+
+// API functions
+const api = {
+  getTeamMembers: async () => {
+    const response = await fetch(`${API_BASE_URL}/users`);
+    if (!response.ok) throw new Error('Failed to fetch team members');
+    return response.json();
+  },
+  
+  getCurrentUser: async () => {
+    const response = await fetch(`${API_BASE_URL}/users/me`);
+    if (!response.ok) throw new Error('Failed to fetch current user');
+    return response.json();
+  },
+  
+  createTeamMember: async (memberData) => {
+    const response = await fetch(`${API_BASE_URL}/users`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(memberData),
+    });
+    if (!response.ok) throw new Error('Failed to create team member');
+    return response.json();
+  },
+  
+  updateTeamMember: async (memberId, updates) => {
+    const response = await fetch(`${API_BASE_URL}/users/${memberId}/status`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(updates),
+    });
+    if (!response.ok) throw new Error('Failed to update team member');
+    return response.json();
+  },
+  
+  deleteTeamMember: async (memberId) => {
+    const response = await fetch(`${API_BASE_URL}/users/${memberId}`, {
+      method: 'DELETE',
+    });
+    if (!response.ok) throw new Error('Failed to delete team member');
+    return response.json();
+  }
+};
 
 export const useAdmin = () => {
   const context = useContext(AdminContext);
@@ -15,23 +63,47 @@ export const useAdmin = () => {
 
 export const AdminProvider = ({ children }) => {
   const [isAdminMode, setIsAdminMode] = useState(false);
-  const [teamMembers, setTeamMembers] = useState(mockTeamMembers);
-  const [userCredentials, setUserCredentials] = useState([
-    // Default admin account
-    { id: 'admin', password: 'admin123', role: 'admin', name: 'Administrator' }
-  ]);
+  const [teamMembers, setTeamMembers] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  // Load team members and current user on mount
+  useEffect(() => {
+    loadTeamData();
+  }, []);
+
+  const loadTeamData = async () => {
+    try {
+      setLoading(true);
+      const [members, user] = await Promise.all([
+        api.getTeamMembers(),
+        api.getCurrentUser()
+      ]);
+      
+      console.log('Loaded team members:', members);
+      console.log('Loaded current user:', user);
+      
+      setTeamMembers(members);
+      setCurrentUser(user);
+      setIsAuthenticated(true); // Auto-authenticate for demo
+      setIsAdminMode(user.role === 'admin');
+    } catch (error) {
+      console.error('Failed to load team data:', error);
+      toast.error('Failed to load team data');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const login = (userId, password) => {
-    const user = userCredentials.find(cred => cred.id === userId && cred.password === password);
-    if (user) {
-      setCurrentUser(user);
+    // For demo purposes, just use the current user from MongoDB
+    if (currentUser) {
       setIsAuthenticated(true);
-      if (user.role === 'admin') {
+      if (currentUser.role === 'admin') {
         setIsAdminMode(true);
       }
-      toast.success(`Welcome, ${user.name}!`);
+      toast.success(`Welcome, ${currentUser.name}!`);
       return true;
     } else {
       toast.error('Invalid credentials');
@@ -46,79 +118,53 @@ export const AdminProvider = ({ children }) => {
     toast.success('Logged out successfully');
   };
 
-  const addPerson = (personData) => {
-    // Add to user credentials
-    const newCredential = {
-      id: personData.id,
-      password: personData.password,
-      name: personData.name,
-      role: personData.role || 'member'
-    };
-    
-    setUserCredentials(prev => [...prev, newCredential]);
-
-    // Add to team members
-    const newMember = {
-      id: personData.id,
-      name: personData.name,
-      role: personData.role || 'member',
-      avatar: personData.avatar || '',
-      status: personData.status || 'available',
-      timezone: personData.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone,
-      location: personData.location || '',
-      workingHours: personData.workingHours || { start: 9, end: 17 },
-      lastUpdated: new Date(),
-    };
-    
-    setTeamMembers(prev => [...prev, newMember]);
-    toast.success(`${personData.name} has been added as a ${personData.role}`);
+  const addPerson = async (personData) => {
+    try {
+      console.log('Adding person to MongoDB:', personData);
+      const newMember = await api.createTeamMember(personData);
+      console.log('Created member:', newMember);
+      
+      setTeamMembers(prev => [...prev, newMember]);
+      toast.success(`${personData.name} has been added to the team`);
+      
+      // Reload team data to ensure consistency
+      await loadTeamData();
+    } catch (error) {
+      console.error('Failed to add person:', error);
+      toast.error('Failed to add team member');
+    }
   };
 
-  const addUserCredential = (credentialData) => {
-    const newCredential = {
-      ...credentialData,
-      role: credentialData.role || 'member'
-    };
-    
-    setUserCredentials(prev => [...prev, newCredential]);
-    toast.success(`User credentials created for ${credentialData.name}`);
+  const addTeamMember = async (memberData) => {
+    await addPerson(memberData);
   };
 
-  const removeUserCredential = (userId) => {
-    const user = userCredentials.find(cred => cred.id === userId);
-    setUserCredentials(prev => prev.filter(cred => cred.id !== userId));
-    
-    // Also remove from team members if exists
-    setTeamMembers(prev => prev.filter(member => member.id !== userId));
-    
-    toast.success(`User credentials removed for ${user?.name}`);
+  const removeTeamMember = async (memberId) => {
+    try {
+      await api.deleteTeamMember(memberId);
+      const member = teamMembers.find(m => m._id === memberId);
+      setTeamMembers(prev => prev.filter(member => member._id !== memberId));
+      toast.success(`${member?.name} has been removed from the team`);
+    } catch (error) {
+      console.error('Failed to remove team member:', error);
+      toast.error('Failed to remove team member');
+    }
   };
 
-  const addTeamMember = (memberData) => {
-    const newMember = {
-      ...memberData,
-      id: Date.now().toString(),
-      lastUpdated: new Date(),
-    };
-    
-    setTeamMembers(prev => [...prev, newMember]);
-    toast.success(`${memberData.name} has been added to the team`);
-  };
-
-  const removeTeamMember = (memberId) => {
-    const member = teamMembers.find(m => m.id === memberId);
-    setTeamMembers(prev => prev.filter(member => member.id !== memberId));
-    toast.success(`${member?.name} has been removed from the team`);
-  };
-
-  const updateTeamMember = (memberId, updates) => {
-    setTeamMembers(prev => 
-      prev.map(member => 
-        member.id === memberId 
-          ? { ...member, ...updates, lastUpdated: new Date() }
-          : member
-      )
-    );
+  const updateTeamMember = async (memberId, updates) => {
+    try {
+      const updatedMember = await api.updateTeamMember(memberId, updates);
+      setTeamMembers(prev => 
+        prev.map(member => 
+          member._id === memberId 
+            ? { ...member, ...updates, lastUpdated: new Date() }
+            : member
+        )
+      );
+    } catch (error) {
+      console.error('Failed to update team member:', error);
+      toast.error('Failed to update team member');
+    }
   };
 
   const toggleAdminMode = () => {
@@ -130,6 +176,15 @@ export const AdminProvider = ({ children }) => {
     }
   };
 
+  // Legacy functions for backward compatibility
+  const addUserCredential = () => {
+    toast.info('User credentials are now managed through MongoDB');
+  };
+
+  const removeUserCredential = () => {
+    toast.info('User credentials are now managed through MongoDB');
+  };
+
   return (
     <AdminContext.Provider value={{
       isAdminMode,
@@ -139,7 +194,7 @@ export const AdminProvider = ({ children }) => {
       removeTeamMember,
       updateTeamMember,
       toggleAdminMode,
-      userCredentials,
+      userCredentials: [], // Empty for backward compatibility
       addUserCredential,
       removeUserCredential,
       addPerson,
@@ -147,6 +202,8 @@ export const AdminProvider = ({ children }) => {
       isAuthenticated,
       login,
       logout,
+      loading,
+      loadTeamData,
     }}>
       {children}
     </AdminContext.Provider>

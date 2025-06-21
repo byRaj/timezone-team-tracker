@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { TeamMemberCard } from '../components/TeamMemberCard';
 import { StatusSelector } from '../components/StatusSelector';
@@ -9,14 +8,15 @@ import { useTheme } from '../contexts/ThemeContext';
 import { toast } from 'sonner';
 
 const Index = () => {
-  const { teamMembers, updateTeamMember, isAuthenticated, currentUser } = useAdmin();
+  const { teamMembers, updateTeamMember, isAuthenticated, currentUser, loading } = useAdmin();
   const { theme } = useTheme();
   const [currentTeamMember, setCurrentTeamMember] = useState(null);
 
   // Move all hooks to the top before any conditional returns
   useEffect(() => {
     if (currentUser && teamMembers.length > 0) {
-      const memberData = teamMembers.find(member => member.name === currentUser.name) || teamMembers[0];
+      // Find member by _id since MongoDB uses _id
+      const memberData = teamMembers.find(member => member._id === currentUser._id) || teamMembers[0];
       setCurrentTeamMember(memberData);
     }
   }, [currentUser, teamMembers]);
@@ -25,20 +25,48 @@ const Index = () => {
     if (!isAuthenticated || !currentTeamMember) return;
     
     const interval = setInterval(() => {
-      const otherMembers = teamMembers.filter(member => member.id !== currentTeamMember?.id);
+      const otherMembers = teamMembers.filter(member => member._id !== currentTeamMember?._id);
       if (otherMembers.length > 0) {
         const randomMember = otherMembers[Math.floor(Math.random() * otherMembers.length)];
         const statuses = ['available', 'busy', 'in-meeting', 'offline'];
         const randomStatus = statuses[Math.floor(Math.random() * statuses.length)];
         
         if (randomMember.status !== randomStatus) {
-          updateTeamMember(randomMember.id, { status: randomStatus });
+          updateTeamMember(randomMember._id, { status: randomStatus });
         }
       }
     }, 10000);
 
     return () => clearInterval(interval);
-  }, [teamMembers, currentTeamMember?.id, updateTeamMember, isAuthenticated]);
+  }, [teamMembers, currentTeamMember?._id, updateTeamMember, isAuthenticated]);
+
+  // Show loading state
+  if (loading) {
+    return (
+      <div style={{ 
+        minHeight: '100vh', 
+        backgroundColor: theme === 'dark' ? '#0f172a' : '#f8fafc',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ 
+            fontSize: '18px', 
+            color: theme === 'dark' ? '#ffffff' : '#1e293b',
+            marginBottom: '8px'
+          }}>
+            Loading team data...
+          </div>
+          <div style={{ 
+            color: theme === 'dark' ? '#94a3b8' : '#64748b'
+          }}>
+            Connecting to MongoDB
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // If not authenticated, show login page
   if (!isAuthenticated) {
@@ -50,7 +78,7 @@ const Index = () => {
     
     const updatedMember = { ...currentTeamMember, status: newStatus, lastUpdated: new Date() };
     setCurrentTeamMember(updatedMember);
-    updateTeamMember(currentTeamMember.id, { status: newStatus });
+    updateTeamMember(currentTeamMember._id, { status: newStatus });
 
     toast.success(`Status updated to ${newStatus.charAt(0).toUpperCase() + newStatus.slice(1).replace('-', ' ')}`);
   };
@@ -220,9 +248,9 @@ const Index = () => {
           <h2 style={sectionTitleStyle}>Team Members</h2>
           <div style={gridStyle}>
             {teamMembers
-              .filter(member => member.id !== currentTeamMember?.id)
+              .filter(member => member._id !== currentTeamMember?._id)
               .map(member => (
-                <TeamMemberCard key={member.id} member={member} />
+                <TeamMemberCard key={member._i} member={member} />
               ))}
           </div>
         </div>
