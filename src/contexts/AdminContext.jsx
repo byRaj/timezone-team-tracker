@@ -1,10 +1,21 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { toast } from 'sonner';
 
 const AdminContext = createContext();
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
+// Default fallback admin user for when API is unavailable
+const DEFAULT_ADMIN = {
+  _id: 'default-admin',
+  name: 'Admin User',
+  email: 'admin@example.com',
+  role: 'admin',
+  status: 'available',
+  avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
+  location: 'San Francisco, CA',
+  timezone: 'America/Los_Angeles'
+};
 
 // API functions
 const api = {
@@ -81,7 +92,10 @@ export const AdminProvider = ({ children }) => {
       setTeamMembers(members);
     } catch (error) {
       console.error('Failed to load team members:', error);
-      toast.error('Failed to load team data');
+      console.log('Using fallback admin user');
+      // Use fallback admin user when API is unavailable
+      setTeamMembers([DEFAULT_ADMIN]);
+      toast.error('API unavailable - using demo admin user');
     } finally {
       setLoading(false);
     }
@@ -112,6 +126,9 @@ export const AdminProvider = ({ children }) => {
 
   const login = async (userId, password) => {
     try {
+      console.log('Attempting login for:', userId);
+      console.log('Available team members:', teamMembers);
+      
       // For demo purposes, we'll check if the userId matches any team member's email or name
       // and use a simple password check (in production, this would be handled by the backend)
       const user = teamMembers.find(member => 
@@ -119,6 +136,8 @@ export const AdminProvider = ({ children }) => {
         member.name.toLowerCase() === userId.toLowerCase() ||
         member._id === userId
       );
+      
+      console.log('Found user:', user);
       
       if (user && password === 'admin') { // Simple demo password
         setCurrentUser(user);
