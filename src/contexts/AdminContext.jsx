@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { toast } from 'sonner';
 
@@ -15,7 +14,12 @@ const DEFAULT_ADMIN = {
   status: 'available',
   avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
   location: 'San Francisco, CA',
-  timezone: 'America/Los_Angeles'
+  timezone: 'America/Los_Angeles',
+  workingHours: {
+    start: '09:00',
+    end: '17:00'
+  },
+  lastUpdated: new Date()
 };
 
 // API functions
@@ -178,9 +182,19 @@ export const AdminProvider = ({ children }) => {
     try {
       console.log('Adding person:', personData);
       
+      // Ensure the person has all required fields including workingHours
+      const completePersonData = {
+        ...personData,
+        workingHours: personData.workingHours || {
+          start: '09:00',
+          end: '17:00'
+        },
+        lastUpdated: new Date()
+      };
+      
       if (isApiAvailable) {
-        console.log('Adding person to MongoDB:', personData);
-        const newMember = await api.createTeamMember(personData);
+        console.log('Adding person to MongoDB:', completePersonData);
+        const newMember = await api.createTeamMember(completePersonData);
         console.log('Created member:', newMember);
         
         setTeamMembers(prev => [...prev, newMember]);
@@ -189,12 +203,11 @@ export const AdminProvider = ({ children }) => {
         // Reload team data to ensure consistency
         await loadTeamMembers();
       } else {
-        console.log('API unavailable, adding person locally:', personData);
+        console.log('API unavailable, adding person locally:', completePersonData);
         // Add to local state when API is unavailable
         const newMember = {
-          ...personData,
-          _id: `local-${Date.now()}`,
-          lastUpdated: new Date()
+          ...completePersonData,
+          _id: `local-${Date.now()}`
         };
         
         setTeamMembers(prev => [...prev, newMember]);
@@ -208,6 +221,10 @@ export const AdminProvider = ({ children }) => {
       const newMember = {
         ...personData,
         _id: `local-${Date.now()}`,
+        workingHours: personData.workingHours || {
+          start: '09:00',
+          end: '17:00'
+        },
         lastUpdated: new Date()
       };
       
