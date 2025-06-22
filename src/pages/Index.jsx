@@ -12,10 +12,8 @@ const Index = () => {
   const { theme } = useTheme();
   const [currentTeamMember, setCurrentTeamMember] = useState(null);
 
-  // Move all hooks to the top before any conditional returns
   useEffect(() => {
     if (currentUser && teamMembers.length > 0) {
-      // Find member by _id since MongoDB uses _id
       const memberData = teamMembers.find(member => member._id === currentUser._id) || teamMembers[0];
       setCurrentTeamMember(memberData);
     }
@@ -40,7 +38,6 @@ const Index = () => {
     return () => clearInterval(interval);
   }, [teamMembers, currentTeamMember?._id, updateTeamMember, isAuthenticated]);
 
-  // Show loading state
   if (loading) {
     return (
       <div style={{ 
@@ -68,7 +65,6 @@ const Index = () => {
     );
   }
 
-  // If not authenticated, show login page
   if (!isAuthenticated) {
     return <Login />;
   }
@@ -225,14 +221,28 @@ const Index = () => {
       <Header />
       
       <main style={containerStyle}>
-        {/* Current User Status Section */}
         {currentTeamMember && (
-          <div style={sectionStyle}>
-            <div style={currentUserSectionStyle}>
-              <h2 style={sectionTitleStyle}>Your Status</h2>
-              <div style={currentUserContentLargeStyle}>
+          <div style={{ marginBottom: '32px' }}>
+            <div style={{
+              backgroundColor: theme === 'dark' ? '#1e293b' : '#ffffff',
+              borderRadius: '12px',
+              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+              padding: '24px',
+              border: theme === 'dark' ? '1px solid #374151' : '1px solid #e2e8f0'
+            }}>
+              <h2 style={{
+                fontSize: '24px',
+                fontWeight: 'bold',
+                color: theme === 'dark' ? '#ffffff' : '#1e293b',
+                marginBottom: '24px'
+              }}>Your Status</h2>
+              <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '24px'
+              }}>
                 <TeamMemberCard member={currentTeamMember} isCurrentUser={true} />
-                <div style={statusSelectorStyle}>
+                <div style={{ flex: 1 }}>
                   <StatusSelector 
                     currentStatus={currentTeamMember.status} 
                     onStatusChange={handleStatusChange} 
@@ -243,29 +253,71 @@ const Index = () => {
           </div>
         )}
 
-        {/* Team Members Grid */}
-        <div style={sectionStyle}>
-          <h2 style={sectionTitleStyle}>Team Members</h2>
-          <div style={gridStyle}>
+        <div style={{ marginBottom: '32px' }}>
+          <h2 style={{
+            fontSize: '24px',
+            fontWeight: 'bold',
+            color: theme === 'dark' ? '#ffffff' : '#1e293b',
+            marginBottom: '24px'
+          }}>Team Members</h2>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+            gap: '24px'
+          }}>
             {teamMembers
               .filter(member => member._id !== currentTeamMember?._id)
               .map(member => (
-                <TeamMemberCard key={member._i} member={member} />
+                <TeamMemberCard key={member._id} member={member} />
               ))}
           </div>
         </div>
 
-        {/* Stats Section */}
-        <div style={statsStyle}>
-          <h3 style={{ ...sectionTitleStyle, fontSize: '20px' }}>Team Overview</h3>
-          <div style={statsGridLargeStyle}>
+        <div style={{
+          backgroundColor: theme === 'dark' ? '#1e293b' : '#ffffff',
+          borderRadius: '12px',
+          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+          padding: '24px',
+          border: theme === 'dark' ? '1px solid #374151' : '1px solid #e2e8f0'
+        }}>
+          <h3 style={{
+            fontSize: '20px',
+            fontWeight: 'bold',
+            color: theme === 'dark' ? '#ffffff' : '#1e293b',
+            marginBottom: '24px'
+          }}>Team Overview</h3>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(2, 1fr)',
+            gap: '16px'
+          }}>
             {(['available', 'busy', 'in-meeting', 'offline']).map(status => {
               const count = teamMembers.filter(member => member.status === status).length;
+              const colors = {
+                available: { bg: '#059669', text: '#ffffff' },
+                busy: { bg: '#dc2626', text: '#ffffff' },
+                'in-meeting': { bg: '#d97706', text: '#ffffff' },
+                offline: { bg: '#4b5563', text: '#e5e7eb' }
+              };
               
               return (
-                <div key={status} style={getStatCardStyle(status)}>
-                  <div style={statNumberStyle}>{count}</div>
-                  <div style={statLabelStyle}>
+                <div key={status} style={{
+                  textAlign: 'center',
+                  borderRadius: '8px',
+                  padding: '16px',
+                  backgroundColor: colors[status].bg,
+                  color: colors[status].text,
+                  boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)'
+                }}>
+                  <div style={{
+                    fontSize: '24px',
+                    fontWeight: 'bold'
+                  }}>{count}</div>
+                  <div style={{
+                    fontSize: '14px',
+                    fontWeight: '500',
+                    textTransform: 'capitalize'
+                  }}>
                     {status.replace('-', ' ')}
                   </div>
                 </div>

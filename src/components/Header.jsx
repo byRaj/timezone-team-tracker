@@ -10,7 +10,7 @@ import { UserCircle, Settings, LogOut } from 'lucide-react';
 
 export const Header = () => {
   const [showAdminPanel, setShowAdminPanel] = useState(false);
-  const { isAuthenticated, currentUser, logout } = useAdmin();
+  const { isAuthenticated, currentUser, logout, isAdminMode } = useAdmin();
   const { theme } = useTheme();
 
   const headerStyle = {
@@ -68,22 +68,26 @@ export const Header = () => {
           <h1 style={titleStyle}>Team Availability Tracker</h1>
           
           <div style={rightSectionStyle}>
-            <div style={userInfoStyle}>
-              <UserCircle className="h-5 w-5" />
-              <span>{currentUser?.name}</span>
-            </div>
+            {currentUser && (
+              <div style={userInfoStyle}>
+                <UserCircle className="h-5 w-5" />
+                <span>{currentUser.name}</span>
+              </div>
+            )}
             
             <DownloadProject />
             
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setShowAdminPanel(true)}
-              className="flex items-center gap-2"
-            >
-              <Settings className="h-4 w-4" />
-              Admin
-            </Button>
+            {currentUser?.role === 'admin' && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowAdminPanel(true)}
+                className="flex items-center gap-2"
+              >
+                <Settings className="h-4 w-4" />
+                Admin
+              </Button>
+            )}
             
             <Button
               variant="outline"
@@ -100,7 +104,7 @@ export const Header = () => {
         </div>
       </header>
 
-      {showAdminPanel && (
+      {showAdminPanel && isAdminMode && currentUser?.role === 'admin' && (
         <AdminPanel onClose={() => setShowAdminPanel(false)} />
       )}
     </>
