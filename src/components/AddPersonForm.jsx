@@ -84,7 +84,8 @@ export const AddPersonForm = ({ onAdd, onClose }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!formData.name || !formData.email) {
+    if (!formData.name || !formData.email || !formData.location) {
+      alert('Please fill in all required fields: Name, Email, and Location');
       return;
     }
     
@@ -150,7 +151,7 @@ export const AddPersonForm = ({ onAdd, onClose }) => {
       </div>
       
       <div className="relative">
-        <label className="text-sm font-medium">Location</label>
+        <label className="text-sm font-medium">Location *</label>
         <Input
           ref={locationInputRef}
           value={formData.location}
@@ -158,6 +159,7 @@ export const AddPersonForm = ({ onAdd, onClose }) => {
           placeholder="City, Country"
           onFocus={() => formData.location.length > 2 && setShowSuggestions(true)}
           onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+          required
         />
         {showSuggestions && locationSuggestions.length > 0 && (
           <div className="absolute z-50 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-lg max-h-40 overflow-y-auto">

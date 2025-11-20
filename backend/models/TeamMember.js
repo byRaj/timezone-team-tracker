@@ -35,12 +35,14 @@ const teamMemberSchema = new mongoose.Schema({
   },
   workingHours: {
     start: { 
-      type: String, 
+      type: String,
+      match: /^([0-1][0-9]|2[0-3]):[0-5][0-9]$/,
       required: true,
       default: '09:00'
     },
     end: { 
-      type: String, 
+      type: String,
+      match: /^([0-1][0-9]|2[0-3]):[0-5][0-9]$/,
       required: true,
       default: '17:00'
     }

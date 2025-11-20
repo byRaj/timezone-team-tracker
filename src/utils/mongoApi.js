@@ -3,7 +3,7 @@
 // This file provides functions to interact with your MongoDB backend
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-const MONGODB_URI = 'mongodb://localhost:27017/team-tracker';
+const MONGODB_URI = "mongodb+srv://Status:raj7214@atlascluster.apm2n.mongodb.net/";
 
 // Generic API request function
 const apiRequest = async (endpoint, options = {}) => {
@@ -138,112 +138,43 @@ export class WebSocketManager {
 }
 
 // React hook for using the WebSocket manager
-export const useWebSocket = (userId) => {
-  const [wsManager] = useState(() => new WebSocketManager());
-  
-  useEffect(() => {
-    if (userId) {
-      wsManager.connect(userId);
-    }
-    
-    return () => {
-      wsManager.disconnect();
-    };
-  }, [userId, wsManager]);
-  
-  return wsManager;
-};
+// NOTE: Import React hooks in your component file if using this
+// export const useWebSocket = (userId) => {
+//   const [wsManager] = useState(() => new WebSocketManager());
+//   
+//   useEffect(() => {
+//     if (userId) {
+//       wsManager.connect(userId);
+//     }
+//     
+//     return () => {
+//       wsManager.disconnect();
+//     };
+//   }, [userId, wsManager]);
+//   
+//   return wsManager;
+// };
 
 // Integration with React state management
-export const useTeamData = () => {
-  const [teamMembers, setTeamMembers] = useState([]);
-  const [currentUser, setCurrentUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+// NOTE: Import React hooks in your component file if using this
+// export const useTeamData = () => {
+//   const [teamMembers, setTeamMembers] = useState([]);
+//   const [currentUser, setCurrentUser] = useState(null);
+//   const [loading, setLoading] = useState(true);
+//   const [error, setError] = useState(null);
 
-  // Load initial data
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        setLoading(true);
-        const [members, user] = await Promise.all([
-          userApi.getTeamMembers(),
-          userApi.getCurrentUser(),
-        ]);
-        setTeamMembers(members);
-        setCurrentUser(user);
-      } catch (err) {
-        setError(err.message);
-        console.error('Failed to load team data:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
+  // Note: Implement hooks in your component file when needed
+// };
 
-    loadData();
-  }, []);
-
-  // Update status function
-  const updateUserStatus = async (userId, status) => {
-    try {
-      await userApi.updateStatus(userId, status);
-      
-      // Update local state
-      if (userId === currentUser?.id) {
-        setCurrentUser(prev => ({ ...prev, status, lastUpdated: new Date() }));
-      }
-      
-      setTeamMembers(prev => 
-        prev.map(member => 
-          member.id === userId 
-            ? { ...member, status, lastUpdated: new Date() }
-            : member
-        )
-      );
-      
-      return true;
-    } catch (err) {
-      setError(err.message);
-      return false;
-    }
-  };
-
-  return {
-    teamMembers,
-    currentUser,
-    loading,
-    error,
-    updateUserStatus,
-    setTeamMembers,
-    setCurrentUser,
-  };
-};
-
-// MongoDB connection test hook
-export const useMongoConnection = () => {
-  const [isConnected, setIsConnected] = useState(false);
-  const [connectionError, setConnectionError] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const testConnection = async () => {
-      try {
-        setIsLoading(true);
-        await userApi.testConnection();
-        setIsConnected(true);
-        setConnectionError(null);
-        console.log('MongoDB connection successful:', MONGODB_URI);
-      } catch (error) {
-        setIsConnected(false);
-        setConnectionError(error.message);
-        console.error('MongoDB connection failed:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    testConnection();
-  }, []);
-
-  return { isConnected, connectionError, isLoading, mongoUri: MONGODB_URI };
+// MongoDB connection test utility
+// Use this function directly in components with React hooks
+export const testMongoConnection = async () => {
+  try {
+    const result = await userApi.testConnection();
+    console.log('MongoDB connection successful:', result);
+    return { isConnected: true, error: null, result };
+  } catch (error) {
+    console.error('MongoDB connection failed:', error);
+    return { isConnected: false, error: error.message, result: null };
+  }
 };

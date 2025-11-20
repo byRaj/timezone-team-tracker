@@ -140,7 +140,7 @@ export const TeamMemberCard = ({ member, isCurrentUser = false }) => {
         
         {member.lastUpdated && (
           <p style={lastUpdatedStyle}>
-            Last updated: {member.lastUpdated.toLocaleTimeString([], { 
+            Last updated: {new Date(member.lastUpdated).toLocaleTimeString([], { 
               hour: '2-digit', 
               minute: '2-digit' 
             })}

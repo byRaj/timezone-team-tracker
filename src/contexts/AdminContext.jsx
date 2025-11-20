@@ -96,7 +96,27 @@ export const AdminProvider = ({ children }) => {
       console.log('Attempting to load team members from API...');
       const members = await api.getTeamMembers();
       console.log('Loaded team members from API:', members);
-      setTeamMembers(members);
+      
+      // Ensure working hours are properly formatted
+      const formattedMembers = members.map(member => ({
+        ...member,
+        workingHours: {
+          start: member.workingHours?.start || '09:00',
+          end: member.workingHours?.end || '17:00'
+        },
+        lastUpdated: member.lastUpdated ? new Date(member.lastUpdated) : new Date()
+      }));
+      
+      // Check if DEFAULT_ADMIN exists in the members list
+      const hasDefaultAdmin = formattedMembers.some(m => m._id === DEFAULT_ADMIN._id);
+      
+      // If no admin user exists in DB, prepend DEFAULT_ADMIN for login purposes
+      if (!hasDefaultAdmin && formattedMembers.length > 0) {
+        setTeamMembers([DEFAULT_ADMIN, ...formattedMembers]);
+      } else {
+        setTeamMembers(formattedMembers.length > 0 ? formattedMembers : [DEFAULT_ADMIN]);
+      }
+      
       setIsApiAvailable(true);
     } catch (error) {
       console.error('Failed to load team members:', error);
@@ -121,8 +141,25 @@ export const AdminProvider = ({ children }) => {
       console.log('Loaded team members:', members);
       console.log('Loaded current user:', user);
       
-      setTeamMembers(members);
-      setCurrentUser(user);
+      // Ensure working hours are properly formatted
+      const formattedMembers = members.map(member => ({
+        ...member,
+        workingHours: {
+          start: member.workingHours?.start || '09:00',
+          end: member.workingHours?.end || '17:00'
+        },
+        lastUpdated: member.lastUpdated ? new Date(member.lastUpdated) : new Date()
+      }));
+      
+      setTeamMembers(formattedMembers);
+      setCurrentUser({
+        ...user,
+        workingHours: {
+          start: user.workingHours?.start || '09:00',
+          end: user.workingHours?.end || '17:00'
+        },
+        lastUpdated: user.lastUpdated ? new Date(user.lastUpdated) : new Date()
+      });
       setIsAuthenticated(true);
       setIsAdminMode(user.role === 'admin');
       setIsApiAvailable(true);
@@ -140,10 +177,14 @@ export const AdminProvider = ({ children }) => {
       console.log('Attempting login for:', userId);
       console.log('Available team members:', teamMembers);
       console.log('Team members length:', teamMembers.length);
+      console.log('Is API available:', isApiAvailable);
+      
+      // If API is not available or team members list is empty, use DEFAULT_ADMIN
+      let searchMembers = teamMembers.length > 0 ? teamMembers : [DEFAULT_ADMIN];
       
       // For demo purposes, we'll check if the userId matches any team member's email or name
       // and use a simple password check (in production, this would be handled by the backend)
-      const user = teamMembers.find(member => 
+      const user = searchMembers.find(member => 
         member.email === userId || 
         member.name.toLowerCase() === userId.toLowerCase() ||
         member._id === userId
@@ -182,6 +223,12 @@ export const AdminProvider = ({ children }) => {
     try {
       console.log('Adding person:', personData);
       
+      // Validate required fields
+      if (!personData.name || !personData.email || !personData.location || !personData.timezone) {
+        toast.error('Missing required fields: name, email, location, and timezone');
+        return false;
+      }
+      
       // Ensure the person has all required fields including workingHours
       const completePersonData = {
         ...personData,
@@ -194,14 +241,34 @@ export const AdminProvider = ({ children }) => {
       
       if (isApiAvailable) {
         console.log('Adding person to MongoDB:', completePersonData);
-        const newMember = await api.createTeamMember(completePersonData);
-        console.log('Created member:', newMember);
-        
-        setTeamMembers(prev => [...prev, newMember]);
-        toast.success(`${personData.name} has been added to the team`);
-        
-        // Reload team data to ensure consistency
-        await loadTeamMembers();
+        try {
+          const newMember = await api.createTeamMember(completePersonData);
+          console.log('Created member:', newMember);
+          
+          const formattedMember = {
+            ...newMember,
+            workingHours: {
+              start: newMember.workingHours?.start || '09:00',
+              end: newMember.workingHours?.end || '17:00'
+            },
+            lastUpdated: newMember.lastUpdated ? new Date(newMember.lastUpdated) : new Date()
+          };
+          
+          setTeamMembers(prev => [...prev, formattedMember]);
+          toast.success(`${personData.name} has been added to the team`);
+          return true;
+        } catch (apiError) {
+          console.error('API error when creating member:', apiError);
+          // Fallback to local addition if API fails
+          const newMember = {
+            ...completePersonData,
+            _id: `local-${Date.now()}`
+          };
+          
+          setTeamMembers(prev => [...prev, newMember]);
+          toast.success(`${personData.name} has been added locally (API error)`);
+          return true;
+        }
       } else {
         console.log('API unavailable, adding person locally:', completePersonData);
         // Add to local state when API is unavailable
@@ -212,24 +279,12 @@ export const AdminProvider = ({ children }) => {
         
         setTeamMembers(prev => [...prev, newMember]);
         toast.success(`${personData.name} has been added locally (API unavailable)`);
+        return true;
       }
     } catch (error) {
       console.error('Failed to add person:', error);
-      
-      // Fallback to local addition if API fails
-      console.log('API failed, adding person locally:', personData);
-      const newMember = {
-        ...personData,
-        _id: `local-${Date.now()}`,
-        workingHours: personData.workingHours || {
-          start: '09:00',
-          end: '17:00'
-        },
-        lastUpdated: new Date()
-      };
-      
-      setTeamMembers(prev => [...prev, newMember]);
-      toast.success(`${personData.name} has been added locally (API unavailable)`);
+      toast.error(`Error adding member: ${error.message}`);
+      return false;
     }
   };
 
