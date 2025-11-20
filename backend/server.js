@@ -55,8 +55,13 @@ app.get('/api/health', (req, res) => {
 });
 
 // Routes
+// FIRST: team members route
 app.use('/api/users', require('./routes/teamMembers'));
-app.use('/api', require('./routes/connection'));
+
+// THEN: connection fallback route
+app.use('/api/connection', require('./routes/connection'));
+
+
 
 // 🔹 Global error handling middleware (MUST be last)
 app.use((err, req, res, next) => {
