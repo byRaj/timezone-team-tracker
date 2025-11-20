@@ -4,7 +4,7 @@ const TeamMember = require('../models/TeamMember');
 const router = express.Router();
 
 // GET all team members
-router.get('/users', async (req, res) => {
+router.get('/', async (req, res) => {
   try {
     const members = await TeamMember.find().sort({ createdAt: -1 });
     // Ensure working hours are properly formatted
