@@ -20,20 +20,26 @@ const envOrigins = process.env.CORS_ORIGIN
 
 const allowedOrigins = [...new Set([...defaultOrigins, ...envOrigins])];
 
-// 🔹 Common CORS options
-const corsOptions = {
-  origin: function (origin, callback) {
-    // allow Postman / curl / server-to-server (no origin)
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      console.log('Blocked by CORS:', origin);
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true,
-};
+console.log('CORS_ORIGIN from env:', process.env.CORS_ORIGIN);
+console.log('Allowed CORS origins:', allowedOrigins);
 
+// 🔹 Express CORS (simplified)
+app.use(
+  cors({
+    origin: allowedOrigins,        // array of allowed origins
+    credentials: true,
+  })
+);
+
+app.use(express.json());
+
+// 🔹 Request logging middleware
+app.use((req, res, next) => {
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.path}`);
+  next();
+});
+
+// 🔹 Socket.IO CORS
 const io = new Server(server, {
   cors: {
     origin: allowedOrigins,
@@ -41,14 +47,33 @@ const io = new Server(server, {
   },
 });
 
-// Middleware
-app.use(cors(corsOptions));
-app.use(express.json());
 app.set('io', io);
+
+// 🔹 Health check endpoint
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
 
 // Routes
 app.use('/api/users', require('./routes/teamMembers'));
 app.use('/api', require('./routes/connection'));
+
+// 🔹 Global error handling middleware (MUST be last)
+app.use((err, req, res, next) => {
+  console.error('Express error:', {
+    message: err.message,
+    stack: err.stack,
+    path: req.path,
+    method: req.method,
+    status: err.status || 500,
+  });
+  
+  res.status(err.status || 500).json({
+    error: err.message || 'Internal Server Error',
+    path: req.path,
+    method: req.method,
+  });
+});
 
 // MongoDB connection
 mongoose
@@ -73,5 +98,13 @@ io.on('connection', (socket) => {
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
-  console.log('Allowed CORS origins:', allowedOrigins);
+});
+
+// 🔹 Handle uncaught exceptions
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+});
+
+process.on('uncaughtException', (error) => {
+  console.error('Uncaught Exception:', error);
 });
