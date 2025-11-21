@@ -14,6 +14,8 @@ const defaultOrigins = [
   'http://localhost:8080',
 ];
 
+
+
 const envOrigins = process.env.CORS_ORIGIN
   ? process.env.CORS_ORIGIN.split(',').map(o => o.trim())
   : [];

@@ -2,7 +2,7 @@
 // MongoDB API integration utilities
 // This file provides functions to interact with your MongoDB backend
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
 const MONGODB_URI = "mongodb+srv://Status:raj7214@atlascluster.apm2n.mongodb.net/";
 
 // Generic API request function
@@ -137,37 +137,6 @@ export class WebSocketManager {
   }
 }
 
-// React hook for using the WebSocket manager
-// NOTE: Import React hooks in your component file if using this
-// export const useWebSocket = (userId) => {
-//   const [wsManager] = useState(() => new WebSocketManager());
-//   
-//   useEffect(() => {
-//     if (userId) {
-//       wsManager.connect(userId);
-//     }
-//     
-//     return () => {
-//       wsManager.disconnect();
-//     };
-//   }, [userId, wsManager]);
-//   
-//   return wsManager;
-// };
-
-// Integration with React state management
-// NOTE: Import React hooks in your component file if using this
-// export const useTeamData = () => {
-//   const [teamMembers, setTeamMembers] = useState([]);
-//   const [currentUser, setCurrentUser] = useState(null);
-//   const [loading, setLoading] = useState(true);
-//   const [error, setError] = useState(null);
-
-  // Note: Implement hooks in your component file when needed
-// };
-
-// MongoDB connection test utility
-// Use this function directly in components with React hooks
 export const testMongoConnection = async () => {
   try {
     const result = await userApi.testConnection();
