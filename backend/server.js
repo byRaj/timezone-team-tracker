@@ -7,25 +7,47 @@ require('dotenv').config();
 
 const app = express();
 const server = http.createServer(app);
-
 // 🔹 Allowed origins (dev + .env)
 const defaultOrigins = [
   'http://localhost:5173',
   'http://localhost:8080',
 ];
 
-
-
+// parse env list (comma-separated)
 const envOrigins = process.env.CORS_ORIGIN
-  ? process.env.CORS_ORIGIN.split(',').map(o => o.trim())
+  ? process.env.CORS_ORIGIN.split(',').map(o => o.trim()).filter(Boolean)
   : [];
 
 const allowedOrigins = [...new Set([...defaultOrigins, ...envOrigins])];
 
 console.log('CORS_ORIGIN from env:', process.env.CORS_ORIGIN);
-console.log('Allowed CORS origins:', allowedOrigins);
+console.log('Allowed explicit CORS origins:', allowedOrigins);
 
-// 🔹 Express CORS (simplified)
+// 🔹 Express CORS: allow explicit origins, any vercel preview, or no-origin (Postman/curl)
+const corsOptions = {
+  origin: function (origin, callback) {
+    // allow requests with no origin (Postman, curl, server-to-server)
+    if (!origin) return callback(null, true);
+
+    // allow exact origins from env/defaults
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+
+    // allow all vercel preview domains: https://<anything>.vercel.app
+    if (/\.vercel\.app$/.test(origin)) {
+      return callback(null, true);
+    }
+
+    console.log('Blocked by CORS:', origin);
+    return callback(new Error('Not allowed by CORS'));
+  },
+  credentials: true,
+};
+
+// apply CORS middleware
+app.use(cors(corsOptions));
+
 app.use(
   cors({
     origin: allowedOrigins,        // array of allowed origins
