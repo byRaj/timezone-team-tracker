@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { AdminPanel } from './AdminPanel';
 import { ThemeToggle } from './ThemeToggle';
-import DownloadProject from './DownloadProject';
+
 import { useAdmin } from '../contexts/AdminContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { UserCircle, Settings, LogOut } from 'lucide-react';
@@ -75,7 +75,7 @@ export const Header = () => {
               </div>
             )}
             
-            <DownloadProject />
+            
             
             {currentUser?.role === 'admin' && (
               <Button
